@@ -96,13 +96,13 @@ for i in lista:
 
         if volt1 and volt2:
             if volt_ido >= volt_koor:
-                f.write(f"{vissza(jelenlegi_ido)} időeltérés {volt_ido}\n")
+                f.write(f"{vissza(jelenlegi_ido).replace(':',' ')} időeltérés {volt_ido}\n")
             else:
-                f.write(f"{vissza(jelenlegi_ido)} koordináta-eltérés {volt_koor}\n")
+                f.write(f"{vissza(jelenlegi_ido).replace(':',' ')} koordináta-eltérés {volt_koor}\n")
         elif volt1:
-            f.write(f"{vissza(jelenlegi_ido)} időeltérés {volt_ido}\n")
+            f.write(f"{vissza(jelenlegi_ido).replace(':',' ')} időeltérés {volt_ido}\n")
         elif volt2:
-            f.write(f"{vissza(jelenlegi_ido)} koordináta-eltérés {volt_koor}\n")
+            f.write(f"{vissza(jelenlegi_ido).replace(':',' ')} koordináta-eltérés {volt_koor}\n")
 
     elozo_x = jelenlegi_x
     elozo_y = jelenlegi_y
