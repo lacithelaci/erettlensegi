@@ -31,12 +31,14 @@ listas.append(ssz)
 volt = 0
 elso_szin = None
 szines_halmaz = set()
+volt2 = False
 for i in lista:
-
+    volt2 = False
     if i.elso < i.utolso:
         for y in range(i.elso, i.utolso + 1):
             if y in listas:
-                db += 1
+                volt2=True
+
                 volt += 1
                 if volt == 1:
                     elso_szin = i.szin
@@ -44,7 +46,8 @@ for i in lista:
     else:
         for y in range(i.elso, elso_sor + 1):
             if y in listas:
-                db += 1
+                volt2 = True
+
                 volt += 1
                 if volt == 1:
                     elso_szin = i.szin
@@ -53,12 +56,13 @@ for i in lista:
                 for y2 in range(1, i.utolso + 1):
 
                     if y2 in listas:
-                        db += 1
+                        volt2 = True
                         volt += 1
                         if volt == 1:
                             elso_szin = i.szin
                         szines_halmaz.add(i.szin)
-
+    if volt2:
+        db += 1
 print(f"A felajánlók száma: {db}")
 if elso_szin == None:
     print("Ezt az ágyást nem ültetik be.")
@@ -130,3 +134,4 @@ for y in range(1, elso_sor + 1):
             ures = "# 0"
     f.write(f"{ures}\n")
     volte = False
+
