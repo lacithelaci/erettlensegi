@@ -36,3 +36,33 @@ for index,i in enumerate(lista):
     if nullak(i)>=18:
         f.write(f"{index+1} {i} \n")
 print("6. feladat")
+def nullak_nelkul(a):
+    a=a.strip().split(":")
+    ures=""
+    for i in a:
+        if i=="0000":
+            ures+="0"
+            ures+=":"
+        else:
+            ures+=i
+            ures+=":"
+    return ures
+def eltuntetheto(a):
+    a = a.strip().split(":")
+    ures=""
+    semmi=""
+    for i in a:
+        if len(i)>1:
+            if i[0].__contains__("0") or i[0:1].__contains__("00") or i[0:2].__contains__("000"):
+                semmi=i.replace("0","")
+            else:
+                semmi=i
+        else:
+            semmi=i
+        ures+=semmi
+        ures+=":"
+
+    return ures[0:-1]
+a=eltuntetheto(nullak_nelkul("fcef:b0e7:7d20:0000:0000:0000:3b95:0565"))
+print(a)
+print('7. feladat')
