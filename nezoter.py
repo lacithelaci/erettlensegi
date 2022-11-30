@@ -23,7 +23,7 @@ for i in lista:
         if y == "x":
             foglalt += 1
 print(
-    f"3. feladat\nAz előadásra eddig {foglalt} jegyet adtak el, ez a nézőtér {(foglalt / db * 100):.2f}%-a.\n4. feladat ")
+    f"3. feladat\nAz előadásra eddig {foglalt} jegyet adtak el, ez a nézőtér {round((foglalt / db * 100))}%-a.\n4. feladat ")
 f = open("kategoria.txt")
 lista2 = []
 listazo = []
@@ -57,6 +57,7 @@ for i in szotar.values():
 for index, i in szotar.items():
     if masz == i:
         print(f"A legtöbb jegyet a(z) {index}. árkategóriában értékesítették. ")
+
 print("5. feladat")
 szum = 0
 for index, i in szotar.items():
@@ -73,16 +74,21 @@ for index, i in szotar.items():
 print(f"{szum} Ft a színház bevétele a pillanatnyilag eladott jegyek")
 print("6. feladat")
 db = 0
-jelenlegi = ""
-kovetkezo = ""
-for i in range(1, 13):
-    for y in range(1, 19):
-        if lista[i][y] == "o" and lista[i + 1][y + 1] == "x" and lista[i - 1][y - 1] == "x":
-            db += 1
-        if lista[0][y] == "o" and lista[1][y] == "x":
-            db += 1
-        if lista[-1][y] == "o" and lista[-1][y] == "x":
-            db += 1
+
+
+def fugg(a):
+    a = "".join(a)
+    a = a.strip().split("x")
+    db = 0
+    for i in a:
+        if len(i) > 1:
+            db += len(i)
+    return db
+
+
+db = 0
+for i in lista:
+    db += fugg(i)
 print(f"{db} ilyen „egyedülálló” üres hely van a nézőtéren")
 print("7. feladat\nA fájlba írás elkészült")
 f = open("szabad.txt", "w")
@@ -99,3 +105,4 @@ for i in a:
     db += 1
     if db % 20 == 0:
         f.write("\n")
+
