@@ -1,97 +1,119 @@
+def szovegge(i):
+    i = i.split(" ")
+    sz = ""
+    for x in i:
+        sz += x
+
+    return sz
+
+
 f = open("melyseg.txt")
 lista = []
 for i in f:
     i = i.strip()
-    lista.append(i)
-print("1. feladat\nA fájl adatainak száma:", len(lista))
-print("2. feladat ")
-a = int(input("Adjon meg egy távolságértéket! "))
-xd = ""
-for index, i in enumerate(lista):
-    if a - 1 == index:
-        print(f"Ezen a helyen a felszín {i} méter mélyen van. ")
-        xd = i
+    lista.append(int(i))
+print(f"1. feladat\nA fájl adatainak száma: {len(lista)}\n2. feladat")
+tavolsag = int(input("Adjon meg egy távolságértéket! 9"))
+db = 0
+ertek=None
+for i in lista:
+    db += 1
+    if db == tavolsag:
+        ertek=i
+        print(f"Ezen a helyen a felszín {ertek} méter mélyen van. ")
         break
 print("3. feladat")
 db = 0
 for i in lista:
-    if i == "0":
+    if i == 0:
         db += 1
-print(f"Az érintetlen terület aránya {(db / len(lista) * 100):.2f}%. ")
+print(f"Az érintetlen terület aránya {round(db / len(lista) * 100, 2)}%. ")
 f = open("godrok.txt", "w")
-jelenlegi = ""
-db = 0
-for i in lista:
-    elozo = i
-    if i != "0":
-        f.write(f"{i} ")
-    if db != 0:
-        if elozo == "0" and jelenlegi != "0":
-            f.write(f"\n")
-    jelenlegi = i
-    db += 1
-print("5. feladat")
-f = open("godrok.txt")
 lista2 = []
-for i in f:
-    i = i.strip()
-    lista2.append(i)
-print("A gödrök száma:", len(lista2))
-print("6. feladat")
-if xd != "0":
-    db = 0
-    for index, i in enumerate(lista):
-        if i == "0":
-            db += 1
-        if index + 1 == a:
-            break
-    hely = a - db
-    db2 = 0
-    indesz = 0
-    for index, i in enumerate(lista2):
-
-        for y in i:
-            db2 += 1
-        if db2 == 3:
-            indesz = index
-            break
-    db2 = 0
-    godor = ""
-    for index, i in enumerate(lista2):
-        if index <= indesz:
-            for y in i:
-                if y != " ":
-                    db2 += 1
-        if index == indesz:
-            godor = i
-    print(f"a)\nA gödör kezdete: {(db2+db - (a+db))} méter, a gödör vége: {db2 + a - hely} méter. ")
-    godor = godor.replace(" ", "")
-    godorke = [int(i) for i in godor]
-    elozo = 0
-    valtozas = False
-    lehet = True
-    elso = 0
-    masodik = 0
-    harmadik = 0
-    for i in godorke:
-        if i > elozo:
-            elso = 1
-        else:
-            masodik = 1
-            valtozas = True
-        if valtozas and i > elozo:
-            harmadik = 1
-        if i == elozo:
-            lehet = False
-        elozo = i
-    ossz = elso + masodik + harmadik
-    print("b)")
-    if lehet and ossz == 2:
-        print("Folyamatosan mélyül")
+szoveg = ""
+for i in lista:
+    if i == 0:
+        if szoveg != "":
+            lista2.append(szoveg)
+        szoveg = ""
     else:
-        print("Nem mélyül folyamatosan")
-    print(f"c)\nA legnagyobb mélysége {max(godorke)} méter. ")
-    print(f"d)\nA térfogata {sum(godorke) * 10} m^3. ")
-    print(f"e)\nA térfogata {(sum(godorke) - len(godorke)) * 10} m^3. ")
+        szoveg += str(i)
+        szoveg += " "
+for i in lista2:
+    if i != "":
+        f.write(f"{i}\n")
+print("5. feladat")
+print(f"A gödrök száma: {len(lista2)} ")
+print("6. feladat")
+if ertek!=0:
+    lista2 = []
+    szoveg = ""
+    for i in lista:
+        if i == 0:
+            if szoveg == "":
+                lista2.append("0")
+            else:
+                lista2.append(szoveg)
+                szoveg = ""
+        else:
+            szoveg += str(i)
+    sor = 0
+    db = 0
+    sor2 = ""
+    volt = False
+    for i in lista2:
+        sor += 1
+        sor2 = i
+        for y in i:
+            db += 1
+            if db == tavolsag:
+                volt = True
+        if volt:
+            break
+    print(f"a)\nA gödör kezdete: {sor} méter, a gödör vége: {sor - 1 + len(sor2)} méter. ")
+    f = open("godrok.txt", "r")
+    lista3 = []
+    for i in f:
+        i = i.strip()
+        lista3.append(i)
+
+    kell = ""
+    lista4 = []
+    for i in lista3:
+        if szovegge(i) == sor2:
+            kell = (i.split(" "))
+    for i in kell:
+        i = int(i)
+        lista4.append(i)
+    a = max(lista4)
+    helye = None
+    db = 0
+    for i in lista4:
+        db += 1
+        if a == i:
+            helye = db
+            break
+    lista2 = lista[0:helye]
+    lista3 = lista[helye - 1:]
+    halmaz = set(lista4)
+    elozo = None
+    jelenlegi = "None"
+    egyezo = False
+    lehet = False
+    if sorted(lista4[0:helye]) == lista2 and sorted(lista3, key=lambda i: i, reverse=True) == lista4[helye - 1:]:
+        lehet = True
+        for i in lista4:
+            elozo = i
+            if elozo == jelenlegi:
+                egyezo = True
+            jelenlegi = elozo
+    if lehet and not egyezo:
+        print("b)\nFolyamatosan mélyül.")
+    else:
+        print("b)\nNem mélyül folyamatosan.")
+
+    print(f"c)\nA legnagyobb mélysége {max(lista4)} méter. ")
+    print(f"d)\nA térfogata {sum(lista4) * 10} m^3. ")
+    print(f"e)\nA vízmennyiség {(sum(lista4) - len(lista4)) * 10} m^3.  ")
 else:
-    print("Az adott helyen nincs gödör.")
+    print(f"Az adott helyen nincs gödör.")
