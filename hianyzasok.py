@@ -52,13 +52,13 @@ def hetnapja(honap, nap):
 
 
 print("5. feladat")
-honap = 2
-nap = 3
+honap = int(input("A hónap sorszáma=2 "))
+nap = int(input("A nap sorszáma=3 "))
 print(f"Azon a napon {hetnapja(honap, nap)} volt. ")
 print("6. feladat")
 hianyzasok = []
-napnev = "szerda"
-sorszama = 3
+napnev = input("A nap neve=szerda ")
+sorszama = int(input("Az óra sorszáma=3 "))
 for tanulo in lista:
     if hetnapja(tanulo.honap, tanulo.nap) == napnev:
         if tanulo.hianyzas[sorszama - 1] == "I" or tanulo.hianyzas[sorszama - 1] == "X":
@@ -73,4 +73,5 @@ print("A legtöbbet hiányzó tanulók:", end=" ")
 for tanulo, hianyzas in szotar.items():
     if legtobb_hianyzas == hianyzas:
         print(tanulo, end=" ")
+
 
