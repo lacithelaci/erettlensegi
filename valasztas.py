@@ -1,94 +1,87 @@
 class Valasztas:
-    def __init__(self,ker,szavazat,vnev,knev,part):
-        self.ker = int(ker)
+    def __init__(self, kerulet, szavazat, vnev, knev, part):
+        self.kerulet = int(kerulet)
         self.szavazat = int(szavazat)
-        self.knev = knev
         self.vnev = vnev
+        self.knev = knev
         self.part = part
 
     def __repr__(self):
-        return f"{self.ker} {self.szavazat} {self.vnev} {self.knev} {self.part}"
-    def nev(self):
+        return f"{self.kerulet} {self.szavazat} {self.knev} {self.vnev} {self.part}"
+
+    def teljes_partnev(self):
+        if self.part == "GYEP":
+            return f"Gyümölcsevők Pártja"
+        if self.part == "HEP":
+            return f"Húsevők Pártja"
+        if self.part == "TISZ":
+            return f"Tejivók Szövetsége"
+        if self.part == "ZEP":
+            return f"Zöldségevők Pártja"
+        if self.part == "-":
+            return f"Független jelöltek"
+
+    def fuggetlen(self):
+        if self.part == "-":
+            return f"független"
+        else:
+            return self.part
+
+    def teljes_nev(self):
         return f"{self.vnev} {self.knev}"
-lista=[]
-f=open("szavazatok.txt")
+
+
+f = open("szavazatok.txt")
+lista = []
 for i in f:
-    i=i.strip().split()
+    i = i.strip().split()
     lista.append(Valasztas(*i))
-print("2. feladat")
-print(f"A helyhatósági választáson {len(lista)} képviselőjelölt indult. ")
-print("3. feladat")
-a="Ablak"
-b="Antal"
-c=""
-Letezik=False
-for i in lista:
-    if i.knev==b and i.vnev==a:
-        c=i.szavazat
-        Letezik=True
-
-
-if Letezik:
-    print(f"{c} szavazatot kapott")
-else:
+print(f"2. feladat\nA helyhatósági választáson {len(lista)} képviselőjelölt indult.\n3. feladat")
+szavazatok = None
+vnev = input("Kérem a képviselő vezetéknevét")
+knev = input("Kérem a képviselő keresztnevét")
+for kepviselok in lista:
+    if kepviselok.knev == knev and kepviselok.vnev == vnev:
+        szavazatok = kepviselok.szavazat
+        break
+if szavazatok == None:
     print("Ilyen nevű képviselőjelölt nem szerepel a nyilvántartásban!")
-db=0
-for i in lista:
-    db+=i.szavazat
-
-print(f"4. feladat\nA választáson {db} állampolgár, a jogosultak {((db/12345)*100):.2f}%-a vett részt. ")
-szotar={}
-asd=0
-print("5. feladat")
-for i in lista:
-    szotar[i.part]=szotar.get(i.part,0)+i.szavazat
-    asd+=i.szavazat
-for xd,i in szotar.items():
-    if xd=="-":
-        xd="Független jelöltek"
-    if xd=="GYEP":
-        xd="Gyümölcsevők Pártja"
-    if xd=="HEP":
-        xd="Húsevők Pártja"
-    if xd=="TISZ":
-        xd="Tejivók Szövetsége "
-    if xd=="ZEP":
-        xd="Zöldségevők Pártja"
-    print(f"{xd}= {((i/asd)*100):.2f}%")
+else:
+    print(szavazatok)
+print("4. feladat")
+szavazat = [i.szavazat for i in lista]
+print(
+    f"A választáson {sum(szavazat)} állampolgár, a jogosultak {round(sum(szavazat) / 12345 * 100, 2)}%-a vett részt.\n5. feladat")
+partszavazatok = {}
+for kepviselok in lista:
+    partszavazatok[kepviselok.teljes_partnev()] = partszavazatok.get(kepviselok.teljes_partnev(),
+                                                                     0) + kepviselok.szavazat
+for part, szavazatok in partszavazatok.items():
+    print(f"{part}= {((szavazatok / sum(szavazat)) * 100):.2f}% ")
 print("6. feladat")
-lista2=[i.szavazat for i in lista]
-a=max(lista2)
-lista3=[]
-for i in lista:
-    if a==i.szavazat:
-        if i.part=="-":
-            i.part="független"
-        lista3.append(f"{i.vnev} {i.knev} {i.part}")
-for i in lista3:
-    print(i)
-lista4=sorted(lista,key=lambda i:(i.ker,i.szavazat))
-print("7. feladat")
-nev=""
-part=""
-kepviselok=[]
-ads="-"
-for i in range(1,9):
-    maxe=0
-    maxi=0
-    for xd in lista:
-        if xd.part == ads:
-            xd.part="független"
-        if xd.szavazat>maxe and xd.ker==i:
-            maxe=xd.szavazat
-            nev=xd.nev()
-            part=xd.part
-    kepviselok.append(f"{nev} {part}")
+for kepviselok in lista:
+    if kepviselok.szavazat == max(szavazat):
+        print(f"{kepviselok.vnev} {kepviselok.knev} {kepviselok.fuggetlen()}")
+f = open("kepviselok.txt", "w",encoding="utf-8")
+# 7. feladat
+keruletek = []
+for kepviselok in lista:
+    if kepviselok.kerulet not in keruletek:
+        keruletek.append(kepviselok.kerulet)
+maximum = 0
+neve = None
+part = None
+for kerulet in sorted(keruletek):
+    maximum = 0
+    neve = None
+    part = None
 
-xd=open("kepviselok.txt","w",encoding="UTF-8")
-for i in kepviselok:
-    xd.write(f"{i} \n")
-
-
-
+    for kepviselok in lista:
+        if kerulet == kepviselok.kerulet:
+            if kepviselok.szavazat > maximum:
+                maximum = kepviselok.szavazat
+                neve = kepviselok.teljes_nev()
+                part = kepviselok.fuggetlen()
+    f.write(f"{kerulet} {neve} {part}\n")
 
 
