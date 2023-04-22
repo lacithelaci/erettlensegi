@@ -1,69 +1,65 @@
-f=open("penztar.txt")
-lista=[]
-kosar={}
-for i in f:
-    if i.strip()=="F":
-        lista.append(kosar)
-        kosar={}
+class Kosar:
+    def __init__(self, az, tartalom):
+        self.az = az
+        self.tartalom = tartalom
+
+    def __repr__(self):
+        return f"{self.az} {self.tartalom}"
+
+
+lista = []
+seged = []
+f = open("penztar.txt")
+az = 0
+for termek in f:
+    termek = termek.strip()
+    if termek != "F":
+        seged.append(termek)
     else:
-        if i.strip() not in kosar:
-            kosar[i.strip()]=1
-        else:
-            kosar[i.strip()]+=1
-print(f"2. feladat\nA fizetések száma: {len(lista)} ")
-print(f"3. feladat\nAz első vásárló {len(lista[0])} darab árucikket vásárolt.")
+        az += 1
+        lista.append(Kosar(az, seged))
+        seged = []
+print(f"2. feladat\nA fizetések száma: {len(lista)}")
+print(f"3. feladat\nAz első vásárló {len(lista[0].tartalom)} darab árucikket vásárolt. ")
 print("4. feladat")
-sorszam=int(input("Adja meg egy vásárlás sorszámát!"))
-termek=input("Adja meg egy árucikk nevét!")
-dbszam=int(input("Adja meg a vásárolt darabszámot!"))
-print("5. feladat")
-eloszor=0
-utolso=0
-db=0
-volte=True
-for index,i in enumerate(lista):
-    for xd in i:
-        if termek==xd:
-            db+=1
-            eloszor=index
-        if volte:
-            if termek == xd:
-                utolso=index
-                volte=False
-print(f"Az első vásárlás sorszáma: {utolso+1}")
-print(f"Az utolsó vásárlás sorszáma: {eloszor+1} ")
-print(f"{db} vásárlás során vettek belőle. ")
-print("6. feladat")
-def darab(a):
-    alap=500
-    alap2=500
-    alap3=500
-    if a==2:
-        alap2=450
-    elif a>2:
-        alap3=400
-        alap2=450
+sorszam = int(input("Adja meg egy vásárlás sorszámát! 2 "))
+arucikk = input("Adja meg egy árucikk nevét! kefe ")
+darabszam = int(input("Adja meg a vásárolt darabszámot! 2 "))
+print("5. feladat ")
+termek = [termek.az for termek in lista if arucikk in termek.tartalom]
+print(
+    f"Az első vásárlás sorszáma: {termek[0]}\nAz utolsó vásárlás sorszáma: {termek[-1]}\n{len(termek)} vásárlás során vettek belőle.\n6. feladat")
+
+
+def ertek(darabszam):
+    if darabszam == 1:
+        return 500
+    elif darabszam == 2:
+        return 950
     else:
-        alap=500
-    if a==1:
-        return alap
-    if a==2:
-        return alap+alap2
-    if a>=3:
-        return alap+alap2+(alap3*(a-2))
-print(f"{dbszam} darab vételekor fizetendő: {darab(dbszam)} ")
+        return 950 + (darabszam - 2) * 400
+
+
+print(f"{darabszam} darab vételekor fizetendő: {ertek(darabszam)}")
+szotar = {}
+for termek in lista:
+    if termek.az == sorszam:
+        for sor in termek.tartalom:
+            szotar[sor] = szotar.get(sor, 0) + 1
 print("7. feladat")
-for index,i in enumerate(lista):
-    for xd,xd2 in i.items():
-        if index+1==sorszam:
-            print(f"{xd} {xd2}")
-i2=0
-szamlalo=0
-asd=open("összeg.txt","w")
-for index,i in enumerate(lista):
-    if i2==index:
-        for xd,xd2 in i.items():
-            szamlalo+=darab(xd2)
-        asd.write(f"{i2+1}: {szamlalo} \n")
-        i2+=1
-    szamlalo=0
+for termek, db in szotar.items():
+    print(f"{db} {termek}")
+f = open("osszeg.txt", "w")
+halmaz = set(i.az for i in lista)
+osszeg = 0
+szotar = {}
+for az in halmaz:
+    osszeg = 0
+    szotar = {}
+    for termek in lista:
+        if termek.az == az:
+            for kosar in termek.tartalom:
+                szotar[kosar] = szotar.get(kosar, 0) + 1
+    for szam in szotar.values():
+        osszeg += ertek(szam)
+    f.write(f"{az}: {osszeg}\n")
