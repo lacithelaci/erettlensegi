@@ -1,94 +1,86 @@
 class Radio:
-    def __init__(self, nap, id, uzenet):
+    def __init__(self, nap, az, uzenet):
         self.nap = int(nap)
-        self.id = int(id)
+        self.az = int(az)
         self.uzenet = uzenet
 
     def __repr__(self):
-        return f"{self.nap} {self.id} {self.uzenet}"
-
-    def darabolt(self):
-        a = self.uzenet.split()
-        return a
+        return f"{self.nap} {self.az} {self.uzenet}"
 
 
-f = open("veetel.txt")
 lista = []
-for i in f:
-    i = i.strip().split()
-    i2 = f.readline().strip()
-    lista.append(Radio(*i, i2))
-print("2. feladat")
-for i in lista:
-    print("Az első üzenet rögzítője:", i.id)
-    break
-a = ""
-for i in lista:
-    a = i.id
-print("Az utolsó üzenet rögzítője:", a)
+f = open("veetel.txt")
+for sor in f:
+    sor = sor.strip().split()
+    sor2 = f.readline().strip()
+    lista.append(Radio(*sor, sor2))
+print(f"2. feladat:\nAz első üzenet rögzítője: {lista[0].az}\nAz utolsó üzenet rögzítője: {lista[-1].az} ")
 print("3. feladat")
-for i in lista:
-    if i.uzenet.__contains__("farkas"):
-        print(f"{i.nap}. nap {i.id}. rádióamatör")
+hossz = None
+for adatok in lista:
+    hossz = adatok.uzenet.split("farkas")
+    if len(hossz) > 1:
+        print(f"{adatok.az}. nap {adatok.nap}. rádióamatőr ")
 print("4. feladat")
-halmaz = set()
-for i in range(1, 12):
-    halmaz.add(i)
+napok = set(nap for nap in range(1, 12))
 db = 0
-asd = 0
-for y in sorted(halmaz):
+lista2 = []
+for nap in sorted(napok):
     db = 0
-    for i in lista:
-        if i.nap == y:
+    for adatok in lista:
+        if adatok.nap == nap:
             db += 1
-    asd += db
-    print(f"{y}. nap: {db} rádióamatőr")
+    lista2.append(db)
+    print(f"{nap}. nap: {db} rádióamatőr ")
+f = open(f"adaas.txt", "w")
+minden_nap = set(nap.nap for nap in lista)
+napi_adatok = set()
+betu = None
+szoveg = ""
+for nap in minden_nap:
+    betu = "#"
+    szoveg = ""
+    for adatok in lista:
+        if nap == adatok.nap:
+            napi_adatok.add(adatok.uzenet)
+    for karakter in range(0, 90):
+        betu = "#"
+        for szoveg_betui in napi_adatok:
+            if szoveg_betui[karakter] != "#":
+                betu = szoveg_betui[karakter]
+        szoveg += betu
+    f.write(f"{szoveg}\n")
+    napi_adatok = set()
 
 
 def szame(szo):
     valasz = True
-    for i in range(1, len(szo)):
-
+    for i in range(0, len(szo)):
         if szo[i] < '0' or szo[i] > '9':
             valasz = False
-
-    szame = valasz
-    return szame
+    return valasz
 
 
-f2 = open("adaas.txt", "w", encoding="utf-8")
-c = ""
-d = ""
-segedlista = []
-for y3 in halmaz:
-    segedlista = []
-    for i in lista:
-        if i.nap == y3:
-            segedlista.append(i.uzenet)
-        d = ""
-        for y in range(90):
-
-            d = "#"
-            for y2 in segedlista:
-
-                if y2[y] != "#":
-                    d = y2[y]
-            c += d
-    f2.write(f"{c[-90:]}\n")
 print("7. feladat")
-nap = int(input("Adja meg a nap sorszámát!  "))
-amator = int(input("Adja meg a rádióamatőr sorszámát!"))
-van = False
-for i in lista:
-    if nap == i.nap and amator == i.id:
-        van = True
-        if i.uzenet[0:4].__contains__("#"):
-            print("Nincs információ")
-            break
-        else:
-            if szame(i.uzenet[0]) and szame(i.uzenet[2]):
-                print(f"A megfigyelt egyedek száma: {int(i.uzenet[0]) + int(i.uzenet[2])}")
-            else:
-                print("Nincs információ")
-if not van:
+nap_sorszama = int(input("Adja meg a nap sorszámát! 2 "))
+radios_az = int(input("Adja meg a rádióamatőr sorszámát! 15 "))
+radios_adata = ""
+for adatok in lista:
+    if adatok.az == radios_az and adatok.nap == nap_sorszama:
+        radios_adata = adatok.uzenet
+osszeg = 0
+megallapithato=True
+if radios_adata != "":
+    for index, betu in enumerate(radios_adata):
+        if szame(betu):
+            osszeg+=int(betu)
+        if szame(betu):
+            if radios_adata[index+1]=="#":
+                megallapithato=False
+if radios_adata!="":
+    if megallapithato != True or osszeg==0:
+        print("Nincs információ")
+    else:
+        print(f"A megfigyelt egyedek száma: {osszeg} ")
+else:
     print("Nincs ilyen feljegyzés")
