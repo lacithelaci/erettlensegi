@@ -1,92 +1,71 @@
-class Ado:
-    def __init__(self, adoszam, utca, hazszam, adozas, terulet):
-        self.adoszam = int(adoszam)
+class Epitmenyado:
+    def __init__(self, az, utca, hazszam, kategoria, alapterulet):
+        self.az = int(az)
         self.utca = utca
         self.hazszam = hazszam
-        self.adozas = adozas
-        self.terulet = int(terulet)
+        self.kategoria = kategoria
+        self.alapterulet = int(alapterulet)
 
     def __repr__(self):
-        return f"{self.adoszam} {self.utca} {self.hazszam} {self.adozas} {self.terulet}"
+        return f"{self.az} {self.utca} {self.hazszam} {self.kategoria} {self.alapterulet}"
 
 
-lista = []
 f = open("utca.txt")
-elso_sor = f.readline()
-elso_sor = elso_sor.split()
+adosavok = f.readline().split()
+lista = []
 for i in f:
-    i = i.strip().split(" ")
-    lista.append(Ado(*i))
-print(f"2. feladat. \nA mintában {len(lista)} telek szerepel.\n3. feladat ")
-van = False
-bekert = int(input("Egy tulajdonos adószáma:"))
-for i in lista:
-    if bekert == i.adoszam:
-        print(f"{i.utca} utca {i.hazszam}")
-        van = True
-if not van:
-    print(f"Nem szerepel az adatállományban.")
-print("5. feladat")
+    i = i.strip().split()
+    lista.append(Epitmenyado(*i))
+print(f"2. feladat. A mintában {len(lista)} telek szerepel. ")
+print(f"3. feladat. Egy tulajdonos adószáma: 68396 ")
+az = 68396
+adoszamos_lista = [i for i in lista if i.az == az]
+for i in adoszamos_lista:
+    print(f"{i.utca} utca {i.hazszam}")
 
 
-def ado(adosav, adoterulet, ado):
-    fizetendo = 0
-    if adosav == "A":
-        fizetendo = adoterulet * ado
-    elif adosav == "B":
-        fizetendo = adoterulet * ado
+def ado(adosav, adoterulet, fizetendo):
+    szum = 0
+    if adosav == 'A':
+        szum = adoterulet * int(fizetendo[0])
+    elif adosav == 'B':
+        szum = adoterulet * int(fizetendo[1])
     else:
-        fizetendo = adoterulet * ado
-    if fizetendo < 10000:
+        szum = adoterulet * int(fizetendo[2])
+    if szum < 10000:
         return 0
     else:
-        return fizetendo
+        return szum
 
 
-halmaz = set(i.adozas for i in lista)
+print(f"5. feladat ")
+tipusok = set(i.kategoria for i in lista)
 db = 0
 szum = 0
-fizetendo = 0
-for y in sorted(halmaz):
+for y in sorted(tipusok):
     db = 0
     szum = 0
-    if y == "A":
-        fizetendo = int(elso_sor[0])
-    elif y == "B":
-        fizetendo = int(elso_sor[1])
-    else:
-        fizetendo = int(elso_sor[2])
     for i in lista:
-        if i.adozas == y:
+        if i.kategoria == y:
             db += 1
-            szum += ado(i.adozas, i.terulet,fizetendo)
-    print(f"{y} sávba {db} telek esik, az adó {szum} Ft.")
-elozo = ""
-jelenlegi = ""
-utca = ""
-elozoutca = ""
-vizsgalas = set()
-for i in lista:
-    jelenlegi = i.adozas
-    utca = i.utca
-    if utca == elozoutca:
-        if jelenlegi != elozo:
-            vizsgalas.add(utca)
-    elozo = jelenlegi
-    elozoutca = utca
-print("6. feladat. A több sávba sorolt utcák: ")
-for i in sorted(vizsgalas):
-    print(i)
-f = open("fizetendo.txt", "w", encoding="UTF-8")
-szum = 0
+            szum += ado(i.kategoria, i.alapterulet, adosavok)
+    print(f"A sávba {db} telek esik, az adó {szum} Ft. ")
+print("6. feladat")
+utcak = set(i.utca for i in lista)
+db = 0
+kategoriak = []
+for y in sorted(utcak):
+    kategoriak = []
+    for i in lista:
+        if i.utca == y:
+            if i.kategoria not in kategoriak:
+                kategoriak.append(i.kategoria)
+    if len(kategoriak) > 1:
+        print(y)
+f = open("fizetendo.txt", "w", encoding="utf-8")
 szotar = {}
 for i in lista:
-    if i.adozas== "A":
-        fizetendo = int(elso_sor[0])
-    elif i.adozas == "B":
-        fizetendo = int(elso_sor[1])
-    else:
-        fizetendo = int(elso_sor[2])
-    szotar[i.adoszam] = szotar.get(i.adoszam, 0) + ado(i.adozas, i.terulet,fizetendo)
+    szotar[i.az] = szotar.get(i.az, 0) + ado(i.kategoria, i.alapterulet, adosavok)
+
 for index, i in szotar.items():
     f.write(f"{index} {i}\n")
