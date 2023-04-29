@@ -17,8 +17,7 @@ for i in f:
     i = i.strip().split()
     lista.append(Epitmenyado(*i))
 print(f"2. feladat. A mintában {len(lista)} telek szerepel. ")
-print(f"3. feladat. Egy tulajdonos adószáma: 68396 ")
-az = 68396
+az = int(input("3. feladat Egy tulajdonos adószáma: 68396")
 adoszamos_lista = [i for i in lista if i.az == az]
 for i in adoszamos_lista:
     print(f"{i.utca} utca {i.hazszam}")
