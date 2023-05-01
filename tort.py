@@ -1,6 +1,7 @@
 #  Copyright (c) 2022.
 #  A forráskód készítője: Ladányi Attila
 #  Tanulság: először olvass és csak utána írd a programot
+# (2023) Tanulság: jól írd meg a programot és csak utána küldd tovább ~Ladányi
 
 bszam = int(input("1. feladat\nAdja meg a számlálót: "))
 bnev = int(input("Adja meg a nevezőt: "))
