@@ -23,7 +23,7 @@ for i in f:
         db = 0
 print(f"2. feladat\nA fájlban {len(lista)} bejegyzés van. ")
 oraszam = [i.oraszam for i in lista]
-print(f"3. feladat\nAz iskolában a heti összóraszám: {len(oraszam)} ")
+print(f"3. feladat\nAz iskolában a heti összóraszám: {sum(oraszam)} ")
 print(f"4. feladat")
 nev = input("Egy tanár neve= Albatrosz Aladin ")
 tanar = [i.oraszam for i in lista if i.nev == nev]
