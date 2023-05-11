@@ -1,94 +1,102 @@
-class Auto:
-    def __init__(self,nap,ora,rendszam,az,km,kibe):
+class Cegesauto:
+    def __init__(self, nap, ora_perc, rendszam, az, km, kibe):
         self.nap = int(nap)
-        self.ora = ora
+        self.ora_perc = ora_perc
         self.rendszam = rendszam
         self.az = int(az)
         self.km = int(km)
         self.kibe = int(kibe)
+
     def __repr__(self):
-        return f"{self.nap} {self.ora} {self.rendszam} {self.az} {self.km} {self.kibe}"
-    def ki(self):
-        if i.kibe==0:
-            return f"ki"
-        else:
-            return f"be"
+        return f"{self.nap} {self.ora_perc} {self.rendszam} {self.az} {self.km} {self.kibe}"
 
-lista=[]
-f=open("autok.txt")
+    def kibe_szoveg(self):
+        if self.kibe == 0:
+            return "ki"
+        else:
+            return "be"
+
+
+lista = []
+f = open("autok.txt")
 for i in f:
-    i=i.strip().split()
-    lista.append(Auto(*i))
-print("2. feladat")
+    i = i.strip().split()
+    lista.append(Cegesauto(*i))
+kivittek = [i for i in lista if i.kibe == 0]
+print(f"2. feladat\n{kivittek[-1].nap}. nap rendszám: {kivittek[-1].rendszam} ")
+print(f"3. feladat")
+nap = int(input("Nap:"))
+print(f"Forgalom a(z) {nap}. napon: ")
 for i in lista:
-    if i.kibe==0:
-        a=i.nap
-        b=i.rendszam
-print(f"{a}. nap rendszám: {b} ")
-print("3. feladat")
-nap=int(input("Nap:"))
-lista2=[]
+    if i.nap == nap:
+        print(f"{i.nap} {i.rendszam} {i.az} {i.kibe_szoveg()} ")
+print(f"4. feladat")
+szotar = {}
 for i in lista:
-    if i.nap==nap:
-        lista2.append(f"{i.ora} {i.rendszam} {i.az} {i.ki()}")
-for i in lista2:
-    print(i)
-print("4. feladat")
-a=0
-b=0
-for i in lista:
-    if i.kibe==0:
-        a+=1
-    else:
-        b+=1
-c="CEG301"
-print(f"A hónap végén {a-b} autót nem hoztak vissza. ")
-print("5. feladat")
-asd=" "
-for xd in range(0,10):
-    kezdokm=-1
-    vegkm=-1
-    rsz="CEG30"+str(xd)
+    szotar[i.rendszam] = szotar.get(i.rendszam, 0) + 1
+db = 0
+for i in szotar.values():
+    if i % 2 == 1:
+        db += 1
+print(f"A hónap végén {db} autót nem hoztak vissza. ")
+print(f"5. feladat")
+halmaz = set(i.rendszam for i in lista)
+szum = 0
+kint = False
+bent = False
+kintkm = 0
+bentkm = 0
+for y in sorted(halmaz):
+    kint = False
+    bent = False
+    szum = 0
     for i in lista:
-        if rsz==i.rendszam:
-            if kezdokm==-1:
-                kezdokm=i.km
-            vegkm=i.km
-    print(f"{(rsz+asd+str(vegkm-kezdokm))} km")
-print("6. feladat")
-max=0
-az2=""
-kezdet=0
-veg=0
-jelenlegi=0
-for i in range(500,601):
-    az=i
-
-    for xd in lista:
-        if xd.az==az:
-            if xd.kibe==0:
-                kezdet=xd.km
-            if xd.kibe==1:
-                veg=xd.km
-        if kezdet>0 and veg>0:
-            jelenlegi=veg-kezdet
-            veg=0
-            kezdet=0
-        if max<jelenlegi:
-            max=jelenlegi
-            az2=xd.az
-print(f"Leghosszabb út: {max} km, személy: {az2}")
-print("7. feladat")
-rendszam=input("Rendszám: ")
-print("Menetlevél kész. ")
-a=rendszam+"_menetlevel.txt"
-asd=open(a,"w",encoding="UTF-8")
+        if i.rendszam == y:
+            if i.kibe == 0:
+                kint = True
+                kintkm = i.km
+            else:
+                bent = True
+                bentkm = i.km
+            if kint and bent:
+                szum += bentkm - kintkm
+    print(f"{y} {szum} km ")
+print(f"6. feladat ")
+halmaz = set(i.az for i in lista)
+szum = 0
+masz = 0
+kint = False
+bent = False
+kintkm = 0
+bentkm = 0
+az=None
+for y in sorted(halmaz):
+    kint = False
+    bent = False
+    szum = 0
+    for i in lista:
+        if i.az == y:
+            if i.kibe == 0:
+                kint = True
+                kintkm = i.km
+            else:
+                bent = True
+                bentkm = i.km
+            if kint and bent:
+                kint = False
+                bent = False
+                szum = bentkm - kintkm
+        if masz < szum:
+            az=y
+            masz = szum
+print(f"Leghosszabb út: {masz} km, személy: {az} ")
+print(f"7. feladat ")
+rendszam=input("Rendszám: CEG304 ")
+f=open(f"{rendszam}.txt","w")
 for i in lista:
-    if rendszam==i.rendszam:
-        if i.kibe==0:
-            asd.write(f"{i.az}   {i.nap}.   {i.ora}   {i.km} km ")
+    if i.rendszam==rendszam:
+        if i.kibe_szoveg()=="ki":
+            f.write(f"{i.az}\t{i.nap}\t{i.ora_perc}\t{i.km} km")
         else:
-            asd.write(f"{i.nap}.   {i.ora}   {i.km } km\n")
-
-
-
+            f.write(f"\t{i.az}\t{i.nap}\t{i.ora_perc}\t{i.km} km\n")
+print(f"Menetlevél kész. ")
