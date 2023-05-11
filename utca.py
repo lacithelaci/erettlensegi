@@ -1,78 +1,67 @@
-class Utca:
-    def __init__(self,par,meter,szin):
-        self.par = int(par)
-        self.meter =int( meter)
+class Kerites:
+    def __init__(self, hazszam, hossz, szin):
+        self.hazszam = int(hazszam)
+        self.hossz = int(hossz)
         self.szin = szin
-        self.hazszam = 0
+        self.igazi_hazszam = 0
+
     def __repr__(self):
-        return f"{self.par} {self.meter} {self.szin}"
-    def ures(self):
-        a=" "
-        c=len(str(i.hazszam))
-        return a*(i.meter-c)
-f=open("kerites.txt")
-lista=[]
-paros=0
+        return f"{self.hazszam} {self.hossz} {self.szin}"
+
+
+f = open("kerites.txt")
+lista = []
 for i in f:
-    i=i.strip().split()
-    lista.append(Utca(*i))
-print(f"2. feladat \nAz eladott telkek száma: {len(lista)}")
+    i = i.strip().split()
+    lista.append(Kerites(*i))
+print(f"2. feladat\nAz eladott telkek száma: {len(lista)} ")
+paros = 2
+paratlan = 1
+for i in lista:
+    if i.hazszam == 0:
+        i.igazi_hazszam = paros
+        paros += 2
+    else:
+        i.igazi_hazszam = paratlan
+        paratlan += 2
 print("3. feladat")
-paros1=-1
-paros2=0
-for i in lista:
-    paros=i.par
-if paros==0:
-    print("A páros oldalon adták el az utolsó telket. ")
+if lista[-1].igazi_hazszam % 2 == 0:
+    print(f"A páros oldalon adták el az utolsó telket.\nAz utolsó telek házszáma: {lista[-1].igazi_hazszam} ")
 else:
-    print("A páratlan oldalon adták el az utolsó telket. ")
-for i in lista:
-    if i.par==0:
-        paros2+=2
-        i.hazszam=paros2
-    if i.par==1:
-        paros1+=2
-        i.hazszam=paros1
-    a=i.hazszam
-print(f"Az utolsó telek házszáma: {a} ")
-paratlan=[i for i in lista if i.par%2==1]
-elozo=""
-szamocska=0
-for i in paratlan:
-    if (elozo==i.szin and i.szin!=":" and i.szin!="#" and elozo!="#" and elozo!=":"):
-        print(f"4. feladat\nA szomszédossal egyezik a kerítés színe: {i.hazszam - 2}")
+    print(f"A páratlan oldalon adták el az utolsó telket.\nAz utolsó telek házszáma: {lista[-1].igazi_hazszam} ")
+print(f"4. feladat")
+paratlanok = [i for i in lista if i.hazszam == 1]
+elozo = ""
+jelenlegi = None
+for i in paratlanok:
+    jelenlegi = i.szin
+    if jelenlegi == elozo and jelenlegi != "#" and jelenlegi != ":":
+        print(f"A szomszédossal egyezik a kerítés színe: {i.igazi_hazszam} ")
         break
-    elozo=i.szin
+    elozo = jelenlegi
 print("5. feladat")
-#a=int(input("Adjon meg egy házszámot!"))
-a=83
-b=a-2
-c=a+2
-bszin=""
-cszin=""
+hazszam = int(input(f"Adjon meg egy házszámot! 83 "))
+szinek = "QWERTZUIOPLKJHGFDSAYXCVBNM"
+festett_szinek = set()
+halmaz = set()
+for i in szinek:
+    halmaz.add(i)
 for i in lista:
-    if a==i.hazszam:
-        print(f"A kerítés színe / állapota: {i.szin}")
-        a=i.szin
-    if b==i.hazszam:
-        bszin=i.szin
-    if c==i.hazszam:
-        cszin=i.szin
-szinek2={""}
-szinek2.add(a)
-szinek2.add(bszin)
-szinek2.add(cszin)
-szinek={"A","B","C","D","F","G","H","I","J","K","L","Y","X","C","V","B","N","M","Q","W"}
-lehetseges=szinek.difference(szinek2)
-for i in lehetseges:
-    a=i
-print("A kerítés színe / állapota:",a)
-xd=open("utcakep.txt","w",encoding="UTF-8")
-f=""
-for i in paratlan:
-    xd.write(f"{(i.szin)*i.meter}")
-xd.write("\n")
-xd.close()
-xd=open("utcakep.txt","a")
-for i in paratlan:
-    xd.write(f"{i.hazszam}{i.ures()}")
+    if i.igazi_hazszam == hazszam:
+        print(f"A kerítés színe / állapota: {i.szin} ")
+    if i.igazi_hazszam in [hazszam, hazszam + 2, hazszam - 2]:
+        festett_szinek.add(i.szin)
+lehetseges = halmaz.difference(festett_szinek)
+for i in sorted(lehetseges):
+    print(f"Egy lehetséges festési szín: {i} ")
+    break
+semmi = " "
+f = open(f"utcakep.txt", "w")
+for i in lista:
+    if i.hazszam == 1:
+        f.write(f"{i.szin * i.hossz}")
+f.write(f"\n")
+for i in lista:
+    if i.hazszam == 1:
+        i.igazi_hazszam = str(i.igazi_hazszam)
+        f.write(f"{i.igazi_hazszam}{(i.hossz - (len(i.igazi_hazszam))) * semmi}")
