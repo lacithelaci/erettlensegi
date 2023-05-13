@@ -1,6 +1,6 @@
 class Furdo:
-    def __init__(self, az, furdoaz, kibe, ora, perc, ms):
-        self.az = int(az)
+    def __init__(self, vendegaz, furdoaz, kibe, ora, perc, ms):
+        self.vendegaz = int(vendegaz)
         self.furdoaz = int(furdoaz)
         self.kibe = int(kibe)
         self.ora = int(ora)
@@ -8,130 +8,126 @@ class Furdo:
         self.ms = int(ms)
 
     def __repr__(self):
-        return f"{self.az} {self.furdoaz} {self.kibe} {self.ora} {self.perc} {self.ms}"
+        return f"{self.vendegaz} {self.furdoaz} {self.kibe} {self.ora} {self.perc} {self.ms}"
 
-    def hova(self):
-        if self.kibe == 0:
-            return f"be"
-        else:
-            return f"ki"
-
-    def ora_perc_ms(self):
-        return f"{self.ora}:{self.perc}:{self.ms}"
-
-    def masodperc(self):
-        a = self.perc * 60
-        b = self.ms
-        c = self.ora * 3600
-        return a + b + c
+    def msbe(self):
+        return self.ora * 3600 + self.perc * 60 + self.ms
 
 
-def vissza(a):
-    ora = a // 3600
-    perc = a // (60) - ora * 60
-    ms = a - (ora * 3600 + perc * 60)
-    return f"{ora}:{perc}:{ms}"
+def vissza(ms):
+    perc = ms // 60
+    ora = perc // 60
+    perc = perc - ora * 60
+    msbe = ms - (perc * 60 + (ora * 60 * 60))
+    return f"{ora}:{perc}:{msbe}"
 
 
-lista = []
 f = open("furdoadat.txt")
+lista = []
 for i in f:
-    i = i.strip().split(" ")
+    i = i.strip().split()
     lista.append(Furdo(*i))
-print("2. feladat")
-lista2 = []
-for i in lista:
-    if i.hova() == "ki" and i.furdoaz == 0:
-        lista2.append(i.ora_perc_ms())
+kilepes = [i for i in lista if i.kibe == 1 and i.furdoaz == 0]
 print(
-    f"Az első vendég {lista2[0]}-kor lépett ki az öltözőből.\nAz utolsó vendég {lista2[-1]}-kor lépett ki az öltözőből.  ")
-print("3. feladat")
+    f"2. feladat\nAz első vendég {kilepes[0].ora}:{kilepes[0].perc}:{kilepes[0].ms}-kor lépett ki az öltözőből.\nAz utolsó vendég {kilepes[-1].ora}:{kilepes[-1].perc}:{kilepes[-1].ms}-kor lépett ki az öltözőből. ")
+print(f"3. feladat")
 szotar = {}
 for i in lista:
-    szotar[i.az] = szotar.get(i.az, 0) + 1
-db = 0
-for i in szotar.values():
-    if i == 4:
-        db += 1
-print(f"A fürdőben {db} vendég járt csak egy részlegen. ", )
-print("4. feladat\nA legtöbb időt eltöltő vendég: ")
-vendegek = set()
-for i in lista:
-    vendegek.add(i.az)
-max = 0
-vendeg = 0
-for y in vendegek:
-    az = y
-    volt = True
-    kint = 0
-    bent = 0
+    if i.furdoaz != 0 and i.kibe == 0:
+        szotar[i.vendegaz] = szotar.get(i.vendegaz, 0) + 1
+egyreszleges = [i for i in szotar.values() if i == 1]
+print(f"A fürdőben {len(egyreszleges)} vendég járt csak egy részlegen. ")
+print(f"4. feladat")
+halmaz = set(i.vendegaz for i in lista)
+bejott = False
+kijott = False
+beido = None
+kiido = None
+masz = 0
+kulonbseg = 0
+vendegaz = None
+for y in halmaz:
+    bejott = False
+    kijott = False
+    beido = None
+    kiido = None
     for i in lista:
-        if i.az == az:
-            if volt:
-                if i.hova() == "ki":
-                    bent = i.masodperc()
-                    volt = False
-            if i.hova() == "be":
-                kint = i.masodperc()
-        if max < kint - bent:
-            max = kint - bent
-            vendeg = i.az
-print(f"{vendeg}. vendég {vissza(max)} \n5. feladat")
-kilenc = set()
-kil = 9 * 60 * 60
-tizenhat = set()
-husz = set()
+        if y == i.vendegaz:
+            if i.furdoaz == 0 and i.kibe == 0:
+                beido = i.msbe()
+                bejott = True
+            if i.furdoaz == 0 and i.kibe == 1:
+                kiido = i.msbe()
+                kijott = True
+            if bejott and kijott:
+                kulonbseg = beido - kiido
+                bejott = False
+                kijott = False
+
+            if masz < kulonbseg:
+                masz = kulonbseg
+                vendegaz = y
+print(f"{vendegaz}. vendég {vissza(masz)}")
+hat_kilenc = {}
+kilenc_tizenhat = {}
+tizenhat_plusz = {}
 for i in lista:
-    if kil >= i.masodperc():
-        kilenc.add(i.az)
-    elif 16 * 3600 >= i.masodperc():
-        tizenhat.add(i.az)
-    elif 20 * 3600 >= i.masodperc():
-        husz.add(i.az)
-b = tizenhat.difference(kilenc)
-a = husz.difference(tizenhat)
-print(f"6-9 óra között {len(kilenc)} vendég\n9-16 óra között {len(b)} vendég\n16-20 óra között {len(a)} vendég ")
-print("6. feladat")
-print("Kész a fájl")
-x=open("szauna.txt","w",encoding="UTF-8")
-osszeg=0
-for y in vendegek:
-    az = y
-    volt = True
-    volt2 = True
-    kint = 0
-    bent = 0
-    szum=0
-    osszeg=0
+    if i.ora < 9 and i.furdoaz == 0 and i.kibe == 1:
+        hat_kilenc[i.vendegaz] = hat_kilenc.get(i.vendegaz, 0) + 1
+    elif i.ora < 16 and i.furdoaz == 0 and i.kibe == 1:
+        kilenc_tizenhat[i.vendegaz] = kilenc_tizenhat.get(i.vendegaz, 0) + 1
+    elif i.ora < 20 and i.furdoaz == 0 and i.kibe == 1:
+        tizenhat_plusz[i.vendegaz] = tizenhat_plusz.get(i.vendegaz, 0) + 1
+print(
+    f"5. feladat\n6-9 óra között {len(hat_kilenc)} vendég\n9-16 óra között {len(kilenc_tizenhat)} vendég\n16-20 óra között {len(tizenhat_plusz)} vendég ")
+halmaz = set(i.vendegaz for i in lista)
+bejott = False
+kijott = False
+beido = None
+kiido = None
+masz = 0
+kulonbseg = 0
+vendegaz = None
+f = open("szauna.txt", "w")
+for y in halmaz:
+    bejott = False
+    kijott = False
+    beido = None
+    kiido = None
+    szum = 0
     for i in lista:
-        if i.az == az and i.furdoaz==2:
-            if volt:
-                if i.hova() == "ki":
-                    bent = i.masodperc()
-                    volt=False
-            if volt2:
-                if i.hova() == "be":
-                    kint = i.masodperc()
-                    volt2=False
-            if volt==False and volt2==False:
-                szum=kint-bent
-                volt=True
-                volt2=True
-            osszeg-=szum
-    if osszeg>0:
-        x.write(f"{y} {vissza(osszeg)}\n")
-print("7. feladat")
-uszoda = set()
-szauna = set()
-gyogyviz = set()
-strand = set()
-for i in lista:
-    if i.furdoaz == 1:
-        uszoda.add(i.az)
-    if i.furdoaz == 2:
-        szauna.add(i.az)
-    if i.furdoaz == 3:
-        gyogyviz.add(i.az)
-    if i.furdoaz == 4:
-        strand.add(i.az)
-print(f"Uszoda: {len(uszoda)}\nSzaunák: {len(szauna)}\nGyógyvizes medencék: {len(gyogyviz)}\nStrand: {len(strand)}    ")
+        if y == i.vendegaz:
+            if i.furdoaz == 3 and i.kibe == 0:
+                beido = i.msbe()
+                bejott = True
+            if i.furdoaz == 3 and i.kibe == 1:
+                kiido = i.msbe()
+                kijott = True
+            if bejott and kijott:
+                kulonbseg = beido - kiido
+                bejott = False
+                kijott = False
+                szum += kulonbseg
+    f.write(f"{y} {vissza(-szum)}\n")
+szotar = {}
+reszlegek = set(i.furdoaz for i in lista)
+seged = []
+for y in reszlegek:
+    seged = []
+    for i in lista:
+        if i.furdoaz == y:
+            if i.vendegaz not in seged:
+                seged.append(i.vendegaz)
+                szotar[i.furdoaz] = szotar.get(i.furdoaz, 0) + 1
+
+
+def reszlegek(a):
+    szotar = {1: "Uszoda", 2: "Szaunák", 3: "Gyógyvizes medencék", 4: "Strand"}
+    for index, i in szotar.items():
+        if index == a:
+            return i
+
+
+for index, i in szotar.items():
+    if index != 0:
+        print(f"{reszlegek(index)}: {i} ")
