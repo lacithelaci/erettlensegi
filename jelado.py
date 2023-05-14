@@ -16,96 +16,63 @@ class Jel:
         return self.ora * 3600 + self.perc * 60 + self.ms
 
 
+def ora_perc_ms(ms):
+    perc = ms // 60
+    ora = perc // 60
+    perc = perc - ora * 60
+    ms = ms - (perc * 60 + ora * 3600)
+    return f"{ora}:{perc}:{ms}"
+
+
 def eltelt(a, b):
     return a - b
 
 
-def vissza(a):
-    ora = a // 3600
-    perc = (a - ora * 3600) // 60
-    ms = a - (ora * 3600 + perc * 60)
-    return f"{ora}:{perc}:{ms}"
-
-
-f = open("jel.txt")
 lista = []
+f = open("jel.txt")
 for i in f:
     i = i.strip().split()
     lista.append(Jel(*i))
-ssz = 0
-
-print("2. feladat")
-sorszama = int(input("Adja meg a jel sorszámát!"))
+print(f"2. feladat\nAdja meg a jel sorszámát! 3 ")
+sorszam = 3
+db = 0
 for i in lista:
-    ssz += 1
-    if ssz == sorszama:
-        print(f"x={i.x} y={i.y}")
-
-print("4. feladat")
-print(f"Időtartam: {vissza(eltelt(lista[-1].msbe(), lista[0].msbe()))}")
-print("5. feladat")
-iksz = [i.x for i in lista]
-ipsz = [i.y for i in lista]
-print(f"Bal alsó: {min(iksz)} {min(ipsz)}, jobb felső: {max(iksz)} {max(ipsz)} ")
-print("6. feladat")
+    db += 1
+    if db == sorszam:
+        print(f"x={i.x} y={i.y} ")
+        break
+print(f"4. feladat ")
+print(
+    f"Időtartam: {ora_perc_ms(eltelt(lista[-1].ora * 3600 + lista[-1].perc * 60 + lista[-1].ms, lista[0].ora * 3600 + lista[0].perc * 60 + lista[0].ms))}")
+print(f"5. feladtat")
+y = [i.y for i in lista]
+x = [i.x for i in lista]
+print(f"Bal alsó: {min(x)} {min(y)}, jobb felső: {max(x)} {max(y)}\n6. feladat")
 szum = 0
-iksz_elozo = 0
-iksz_jelenlegi = 0
-ipsz_jelenlegi = 0
-ipsz_elozo = 0
-szamlalo = 0
-for i in lista:
-    iksz_elozo = i.x
-    ipsz_elozo = i.y
-    if szamlalo != 0:
-        szum += math.sqrt(
-            (iksz_elozo - iksz_jelenlegi) * (iksz_elozo - iksz_jelenlegi) + (ipsz_elozo - ipsz_jelenlegi) * (
-                    ipsz_elozo - ipsz_jelenlegi))
-    szamlalo += 1
-    iksz_jelenlegi = iksz_elozo
-    ipsz_jelenlegi = ipsz_elozo
-print(f"Elmozdulás: {(szum):.3f} egység ")
+for i in range(0, len(lista) - 1):
+    szum += math.sqrt((lista[i].x - lista[i + 1].x) ** 2 + (lista[i].y - lista[i + 1].y) ** 2)
+print(f"Elmozdulás: {round(szum, 3)} egység ")
 f = open("kimaradt.txt", "w", encoding="utf-8")
-elozo_ido = 0
-jelenlegi_ido = 0
-szamlalo = 0
-elozo_x = 0
-jelenlegi_x = 0
-elozo_y = 0
-jelenlegi_y = 0
-volt_ido = 0
-volt_koor = 0
-volt1 = False
-volt2 = False
-for i in lista:
-    jelenlegi_x = i.x
-    jelenlegi_y = i.y
-    jelenlegi_ido = i.msbe()
-    szamlalo += 1
-    if szamlalo > 1:
-        if jelenlegi_ido - elozo_ido > 5 * 60:
-            volt_ido = (jelenlegi_ido - elozo_ido) // (5 * 60 + 1)
-
-            volt1 = True
-        if (jelenlegi_x - elozo_x).__abs__() > 10 or (jelenlegi_y - elozo_y).__abs__() > 10:
-            volt2 = True
-            if (jelenlegi_x - elozo_x).__abs__() > (jelenlegi_y - elozo_y).__abs__():
-                volt_koor = (jelenlegi_x - elozo_x).__abs__() // 11
+koordinata_valtozas_x = 0
+koordinata_valtozas_y = 0
+idoelteres = 0
+for i in range(0, len(lista) - 1):
+    if abs(lista[i].x - lista[i + 1].x) > 10:
+        koordinata_valtozas_x = abs(lista[i].x - lista[i + 1].x) // 11
+    if abs(lista[i].y - lista[i + 1].y) > 10:
+        koordinata_valtozas_y = abs(lista[i].y - lista[i + 1].y) // 11
+    if lista[i + 1].msbe() - lista[i].msbe() > 5 * 60:
+        idoelteres = (lista[i + 1].msbe() - lista[i].msbe()) // (5 * 60 + 1)
+    if koordinata_valtozas_x != 0 or koordinata_valtozas_y != 0 or idoelteres != 0:
+        if koordinata_valtozas_x > idoelteres or koordinata_valtozas_y > idoelteres:
+            if koordinata_valtozas_x > koordinata_valtozas_y:
+                f.write(
+                    f"{lista[i + 1].ora} {lista[i + 1].perc} {lista[i + 1].ms} koordináta-eltérés {koordinata_valtozas_x}\n")
             else:
-                volt_koor = (jelenlegi_y - elozo_y).__abs__() // 11
-
-        if volt1 and volt2:
-            if volt_ido >= volt_koor:
-                f.write(f"{vissza(jelenlegi_ido).replace(':',' ')} időeltérés {volt_ido}\n")
-            else:
-                f.write(f"{vissza(jelenlegi_ido).replace(':',' ')} koordináta-eltérés {volt_koor}\n")
-        elif volt1:
-            f.write(f"{vissza(jelenlegi_ido).replace(':',' ')} időeltérés {volt_ido}\n")
-        elif volt2:
-            f.write(f"{vissza(jelenlegi_ido).replace(':',' ')} koordináta-eltérés {volt_koor}\n")
-
-    elozo_x = jelenlegi_x
-    elozo_y = jelenlegi_y
-    elozo_ido = jelenlegi_ido
-    volt1 = False
-    volt2 = False
+                f.write(
+                    f"{lista[i + 1].ora} {lista[i + 1].perc} {lista[i + 1].ms} koordináta-eltérés {koordinata_valtozas_y}\n")
+        else:
+            f.write(f"{lista[i + 1].ora} {lista[i + 1].perc} {lista[i + 1].ms} időeltérés {idoelteres}\n")
+        koordinata_valtozas_x = 0
+        koordinata_valtozas_y = 0
+        idoelteres = 0
