@@ -1,103 +1,67 @@
 class Jelentes:
-    def __init__(self,telepules,ido,iranyero,homerseklet):
+    def __init__(self, telepules, ido, szelirany, homerseklet):
         self.telepules = telepules
         self.ido = ido
-        self.iranyero = iranyero
-        self.homerseklet =int(homerseklet)
-    def __repr__(self):
-        return f"{self.telepules} {self.ido} {self.iranyero} {self.homerseklet}"
-    def oopp(self):
-        a=self.ido
-        b=a[0:2]+":"+a[2:4]
-        return b
-    def szelerosseg(self):
-        a=self.iranyero
-        b="#"
-        return int(a[3:5])*b
-    def ora(self):
-        a=self.ido
-        b = a[0:2]
-        return int(b)
-lista=[]
-f=open("tavirathu13.txt")
-for i in f:
-    i=i.strip().split()
-    lista.append(Jelentes(*i))
-print("2. feladat")
+        self.szelirany = szelirany
+        self.homerseklet = int(homerseklet)
 
-a=input("Adja meg egy település kódját! Település:  ")
-utolso=""
+    def __repr__(self):
+        return f"{self.telepules} {self.ido} {self.szelirany} {self.homerseklet}"
+
+
+lista = []
+f = open("tavirathu13.txt")
+for i in f:
+    i = i.strip().split()
+    lista.append(Jelentes(*i))
+print(f"2. feladat ")
+telepules = input(f"Adja meg egy település kódját! Település: SM ")
+telepules = [i for i in lista if i.telepules == telepules]
+print(f"Az utolsó mérési adat a megadott településről {telepules[-1].ido[0:2]}:{telepules[-1].ido[2:]}-kor érkezett. ")
+print(f"3. feladat")
+homerseklet = [i.homerseklet for i in lista]
+legnagyobb = max(homerseklet)
+legkisebb = min(homerseklet)
 for i in lista:
-    if a==i.telepules:
-        utolso=i.oopp()
-print(f"Az utolsó mérési adat a megadott településről {utolso}-kor érkezett.\n3. feladat ")
-hofokok=[i.homerseklet for i in lista]
-max=max(hofokok)
-min=min(hofokok)
-for i in lista:
-    if min==i.homerseklet:
-        print(f"A legalacsonyabb hőmérséklet: {i.telepules} {i.oopp()} {min} fok. ")
-for i in lista:
-    if max==i.homerseklet:
-        print(f"A legmagasabb hőmérséklet: {i.telepules} {i.oopp()} {max} fok.\n4. feladat ")
+    if i.homerseklet == legkisebb:
+        print(
+            f"A legalacsonyabb hőmérséklet: {i.telepules} {telepules[-1].ido[0:2]}:{telepules[-1].ido[2:]} {i.homerseklet} fok. ")
         break
-szelcsend=0
 for i in lista:
-    if i.iranyero=="00000":
-        print(f"{i.telepules} {i.oopp()}")
-        szelcsend+=1
-if szelcsend==0:
+    if i.homerseklet == legnagyobb:
+        print(
+            f"A legmagasabb hőmérséklet: {i.telepules} {telepules[-1].ido[0:2]}:{telepules[-1].ido[2:]} {i.homerseklet} fok. ")
+        break
+print(f"4. feladat")
+db = 0
+for i in lista:
+    if i.szelirany == "00000":
+        db += 1
+        print(f"{i.telepules} {i.ido[0:2]}:{i.ido[2:]}")
+if db == 0:
     print(f"Nem volt szélcsend a mérések idején.")
 print("5. feladat")
-telepules=set()
-for i in lista:
-    telepules.add(i.telepules)
-
-for i in telepules:
-    jelenlegi=0
-    min=""
-    max=""
-    nullazo=False
-    db = 0
-    szum=0
-    egy=False
-    het=False
-    tizenharom=False
-    tizekilenc=False
-    for j in lista:
-        if i==j.telepules:
-            jelenlegi=j.homerseklet
-            if nullazo==False:
-                min=j.homerseklet
-                max=j.homerseklet
-                nullazo=True
-            if max<jelenlegi:
-                max=jelenlegi
-            if min>jelenlegi:
-                min=jelenlegi
-            if j.ora()==1 or j.ora()==7 or j.ora()==13 or j.ora()==19:
-                szum+=j.homerseklet
-                db+=1
-                if j.ora() == 1:
-                    egy=True
-                if j.ora() == 7:
-                    het=True
-                if j.ora() == 13:
-                    tizenharom=True
-                if j.ora() == 19:
-                    tizekilenc=True
-    if tizenharom and tizenharom and het and egy:
-        print(f"{i} Középhőmérséklet: {round(szum/db)}; Hőmérséklet-ingadozás: {max-min} ")
-    else:
-        szum="NA"
-        print(f"{i} {szum}; Hőmérséklet-ingadozás: {max-min} ")
-
-print("6. feladat\nA fájlok elkészültek")
-
-for j in telepules:
-    bc = j
-    xd = open(f"{bc}.txt", "w", encoding="UTF-8")
-    xd.write(f"{bc}\n")
+telepulesaz = set(i.telepules for i in lista)
+oras_halmaz = set()
+ertekek = []
+for y in sorted(telepulesaz):
+    oras_halmaz = set()
+    ertekek = []
     for i in lista:
-        if bc==i.telepules:
-            xd.write(f"{i.oopp()} {i.szelerosseg()}\n")
+        if i.telepules == y:
+            if int(i.ido[0:2]) in [1, 7, 13, 19]:
+                oras_halmaz.add(int(i.ido[0:2]))
+            ertekek.append(i.homerseklet)
+    if len(oras_halmaz) == 4:
+        print(
+            f"{y} Középhőmérséklet: {round(sum(ertekek) / len(ertekek))}; Hőmérséklet-ingadozás: {max(ertekek) - min(ertekek)} ")
+    else:
+        print(f"{y} NA; Hőmérséklet-ingadozás: {max(ertekek) - min(ertekek)} ")
+print(f"6. feladat\nA fájlok elkészültek. ")
+kettoskereszt = "#"
+for y in telepulesaz:
+    f = open(f"{y}.txt", "w")
+    f.write(f"{y}\n")
+    for i in lista:
+        if i.telepules == y:
+            f.write(f"{i.ido[0:2]}:{i.ido[2:]} {kettoskereszt * int(i.szelirany[3:])}\n")
