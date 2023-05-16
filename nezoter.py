@@ -11,7 +11,7 @@ for i in f2:
 print("2. feladat")
 sor = int(input("sor"))
 oszlop = int(input("oszlop"))
-if foglaltsag[sor][oszlop] == "x":
+if foglaltsag[sor-1][oszlop-1] == "x":
     print(f"foglalt")
 else:
     print(f"szabad")
