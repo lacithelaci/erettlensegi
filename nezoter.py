@@ -1,108 +1,67 @@
+foglaltsag = []
+kategoria = []
 f = open("foglaltsag.txt")
-lista = []
-listazo = []
-db = 0
+f2 = open("kategoria.txt")
 for i in f:
     i = i.strip()
-    listazo = []
-    for y in i:
-        listazo.append(y)
-    lista.append(listazo)
+    foglaltsag.append(i)
+for i in f2:
+    i = i.strip()
+    kategoria.append(i)
 print("2. feladat")
-a = int(input("sor:"))
-b = int(input("oszlop:"))
-if lista[a - 1][b - 1] == "x":
-    print("foglalt")
+sor = int(input("sor"))
+oszlop = int(input("oszlop"))
+if foglaltsag[sor][oszlop] == "x":
+    print(f"foglalt")
 else:
-    print("nem foglalt")
+    print(f"szabad")
+print(f"3. feladat")
 db = 0
-foglalt = 0
-for i in lista:
+for i in foglaltsag:
     for y in i:
-        db += 1
         if y == "x":
-            foglalt += 1
-print(
-    f"3. feladat\nAz előadásra eddig {foglalt} jegyet adtak el, ez a nézőtér {round((foglalt / db * 100))}%-a.\n4. feladat ")
-f = open("kategoria.txt")
-lista2 = []
-listazo = []
-db = 0
-for i in f:
-    i = i.strip()
-    listazo = []
-    for y in i:
-        listazo.append(y)
-    lista2.append(listazo)
-a = ""
-for i in range(0, 15):
-    for y in range(0, 20):
-        if lista[i][y] == "o":
-            a += "o"
-        else:
-            a += lista2[i][y]
-szotar = {}
-db = 0
-for i in lista:
-    for y in i:
-        if y == "o":
             db += 1
-for i in a:
-    if i != "o":
-        szotar[i] = szotar.get(i, 0) + 1
-masz = 0
-for i in szotar.values():
-    if masz < i:
-        masz = i
+print(f"Az előadásra eddig {db} jegyet adtak el, ez a nézőtér {db / (15 * 20) * 100:.0f}%-a. ")
+print(f"4. feladat")
+szotar = {}
+for sor1 in range(0, 15):
+    for oszlop1 in range(0, 20):
+        if foglaltsag[sor1][oszlop1] == "x":
+            szotar[kategoria[sor1][oszlop1]] = szotar.get(kategoria[sor1][oszlop1], 0) + 1
+legtobb = max(szotar.values())
 for index, i in szotar.items():
-    if masz == i:
+    if i == legtobb:
         print(f"A legtöbb jegyet a(z) {index}. árkategóriában értékesítették. ")
+        break
+print(f"5. feladat")
 
-print("5. feladat")
+
+def fizetendo(a):
+    lista = [5000, 4000, 3000, 2000, 1500]
+    return lista[a - 1]
+
+
 szum = 0
 for index, i in szotar.items():
-    if index == "1":
-        szum += 5000 * i
-    elif index == "2":
-        szum += 4000 * i
-    elif index == "3":
-        szum += 3000 * i
-    elif index == "4":
-        szum += 2000 * i
-    elif index == "5":
-        szum += 1500 * i
-print(f"{szum} Ft a színház bevétele a pillanatnyilag eladott jegyek")
-print("6. feladat")
+    szum += fizetendo(int(index)) * i
+print(f"A színház bevétele:", szum)
+ureshelyek = []
+for i in foglaltsag:
+    ureshelyek.append(i.split("x"))
 db = 0
-
-
-def fugg(a):
-    a = "".join(a)
-    a = a.strip().split("x")
-    db = 0
-    for i in a:
-        if len(i) > 1:
-            db += len(i)
-    return db
-
-
-db = 0
-for i in lista:
-    db += fugg(i)
-print(f"{db} ilyen „egyedülálló” üres hely van a nézőtéren")
-print("7. feladat\nA fájlba írás elkészült")
+for i in ureshelyek:
+    for y in i:
+        if len(y) == 1:
+            db += 1
+print(f"6. feladat\n{db} ilyen „egyedülálló” üres hely van a nézőtéren! ")
 f = open("szabad.txt", "w")
-a = ""
-for i in range(0, 15):
-    for y in range(0, 20):
-        if lista[i][y] == "x":
-            a += "x"
-        else:
-            a += lista2[i][y]
 db = 0
-for i in a:
-    f.write(f"{i}")
-    db += 1
-    if db % 20 == 0:
-        f.write("\n")
-
+for sor1 in range(0, 15):
+    for oszlop1 in range(0, 20):
+        db += 1
+        if foglaltsag[sor1][oszlop1] == "o":
+            f.write(kategoria[sor1][oszlop1])
+        else:
+            f.write("x")
+        if db % 15 == 0:
+            f.write("\n")
