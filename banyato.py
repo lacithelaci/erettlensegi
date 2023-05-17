@@ -1,62 +1,61 @@
-f=open("melyseg.txt")
-sor=f.readline()
-oszlop=f.readline()
-lista=[]
+f = open("melyseg.txt")
+sor_oszlop = []
+for i in range(0, 2):
+    sor_oszlop.append(int(f.readline().strip()))
+lista = []
 for i in f:
-    i=i.strip().split(" ")
+    i = i.strip().split()
     lista.append(i)
-print("2. feladat ")
-sora=12
-oszlopa=6
-print(f"A mért mélység az adott helyen {lista[sora - 1][oszlopa - 1]} dm")
-print(f"3. feladat ")
-szum=0
-db=0
-def kerekito(a):
-    a=a/10
-    b=round(a)
-    return b
+print(f"2. feladat ")
+sor = int(input(f"A mérés sorának azonosítója=12 "))
+oszlop = int(input("A mérés oszlopának azonosítója=6 "))
+print(f"A mért mélység az adott helyen {lista[sor - 1][oszlop - 1]} dm ")
+szum = 0
+db = 0
 for i in lista:
-    for j in i:
-        if int(j)!=0:
-            szum+=int(j)
-            db+=1
-print(f"A tó felszíne: {db} m2, átlagos mélysége: {(szum/db/10):.2f} m ")
-print("4.feladat")
-max=int(lista[0][0])
+    for y in i:
+        if y != "0":
+            db += 1
+            szum += int(y)
+print(f"3. feladat\nA tó felszíne: {db} m2, átlagos mélysége: {szum / (db * 10):.2f} m ")
+print(f"4. feladat")
+masz = 0
 for i in lista:
-    for j in i:
-        if max<int(j):
-            max=int(j)
-print(f"A tó legnagyobb mélysége: {max} dm ")
-print("A legmélyebb helyek sor-oszlop koordinátái: ")
-for oszlop,i in enumerate(lista):
-    for sor,j in enumerate(i):
-        if int(j)==max:
-            print(f"({oszlop+1}; {sor+1})",end=" ")
-print("\n5. feladat")
-print('5. feladat')
+    for y in i:
+        if masz < int(y):
+            masz = int(y)
+print(f"A tó legnagyobb mélysége: 98 dm\nA legmélyebb helyek sor-oszlop koordinátái: ")
+for sor1 in range(0, sor_oszlop[0]):
+    for oszlop1 in range(0, sor_oszlop[1]):
+        if int(lista[sor1][oszlop1]) == masz:
+            print(f"({sor1 + 1}; {oszlop1 + 1})", end=" ")
+print(f"\n5. feladat")
 hossz = 0
 for i, sor in enumerate(lista):
     for j, melyseg in enumerate(sor):
-       if int(melyseg) > 0:
-            if int(sor[j-1]) == 0:
+        if int(melyseg) > 0:
+            if int(sor[j - 1]) == 0:
                 hossz += 1
-            if int(sor[j+1]) == 0:
+            if int(sor[j + 1]) == 0:
                 hossz += 1
-            if int(lista[i-1][j]) == 0:
+            if int(lista[i - 1][j]) == 0:
                 hossz += 1
-            if int(lista[i+1][j]) == 0:
+            if int(lista[i + 1][j]) == 0:
                 hossz += 1
 print(f'A tó partvonala {hossz} m hosszú')
-print("6. feladat")
-oszlop=6
-lista2=[]
-for index,i in enumerate(lista):
-    for index2, y in enumerate(i):
-        if index2+1==oszlop:
-            lista2.append(y)
-csillag="*"
-xd=open("diagram.txt","w")
-for index,i in enumerate(lista2):
-    xd.write(f"{(index+1):02d} {csillag*kerekito(int(i))}\n")
+bekert = int(input(f"6. feladat\nA vizsgált szelvény oszlopának azonosítója=6 "))
+adatok = []
+for sor1 in range(0, sor_oszlop[0]):
+    for oszlop1 in range(0, sor_oszlop[1]):
+        if oszlop1 == bekert - 1:
+            adatok.append(int(lista[sor1][bekert - 1]))
+f = open("diagram.txt", "w")
+db = 0
+csillag = "*"
+for i in adatok:
+    db += 1
+    i = round(i / 10)
+    if db < 10:
+        f.write(f"0{db} {csillag * i}\n")
+    else:
+        f.write(f"{db} {csillag * i}\n")
