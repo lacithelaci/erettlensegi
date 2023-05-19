@@ -1,91 +1,79 @@
 import random
 
-
-def fej():
-    a = random.randint(1, 11)
-    if a % 2 == 1:
-        return f"F"
-    else:
-        return "I"
-
-
-print(f"1. feladat\nA pénzfeldobás eredménye: {fej()}\n2. feladat")
-print("Tippeljen! (F/I)=")
-a = "I"
-b = fej()
-print(f"A tipp {a}. a dobás eredménye: {b} volt")
-if a == b:
-    print("Ön eltalálta.")
+print(f"1. feladat")
+lista = ["I", "F"]
+fej_vagy_iras = random.choice(lista)
+print(f"A pénzfeldobás eredménye:", fej_vagy_iras)
+print(f"2. feladat\nTippeljen! (F/I)=")
+tipp = input()
+fej_vagy_iras = random.choice(lista)
+print(f"A tipp {tipp}. a dobás eredménye {fej_vagy_iras} volt.")
+if fej_vagy_iras == tipp:
+    print(f"Ön eltalálta.")
 else:
-    print("Ön nem találta el.")
-print("3. feladat")
+    print(f"Ön nem találta el.")
+print(f"3. feladat")
 f = open("kiserlet.txt")
-lista = []
+fej = 0
+db = 0
+for i in f:
+    db += 1
+    if i.strip() == "F":
+        fej += 1
+print(f"A kísérlet {db} dobásból áll")
+print(f"4. feladat\nA kísérlet során a fej relatív gyakorisága {fej / db * 100:.2f}% volt\n5. feladat")
+f = open("kiserlet.txt")
+db = 0
+fej = 0
 for i in f:
     i = i.strip()
-    lista.append(i)
-print(f"A kísérlet {len(lista)} dobásból állt\n4. feladat")
-db = 0
-for i in lista:
     if i == "F":
         db += 1
-print(f"A fej relatív gyakorisága {(db / len(lista) * 100):.2f}% volt\n5. feladat")
-db=0
-for i in range(len(lista)-2):
-    if lista[i]=="F" and lista[i-1]!="F" and lista[i+1]!="F" and lista[i+2]!="F":
-        db+=1
-
-print(db)
-print("6. feladat")
-db = 0
-masz = 0
-elozo = ""
-kovetkezo = ""
-van = False
-pl = 0
-indesz = 0
-indesz2 = 0
-for index, i in enumerate(lista):
-    elozo = i
-    if elozo == "F":
-        van = True
-    if elozo == kovetkezo and kovetkezo == "F":
-        db += 1
-        indesz = index + 1
     else:
         db = 0
-    if masz <= db:
-        masz = db
-        indesz2 = indesz
-    kovetkezo = elozo
-if van:
-    pl = 1
-print(f"A leghosszabb tisztefej sorozat {masz + pl} tagból áll, kezdete a(z) {(indesz2) - masz}. dobás.")
+    if db == 2:
+        fej -= -1
+    elif db == 3:
+        fej += -1
+print(f"A kísérlet során {fej} alkalommal dobtak pontosan két fejet egymás után\n6. feladat")
+f = open("kiserlet.txt")
+tisztafej = 0
+db = 0
+helye = 0
+masz = 0
+for i in f:
+    i = i.strip()
+    db += 1
+    if i == "F":
+        tisztafej += 1
+    else:
+        tisztafej = 0
+    if masz < tisztafej:
+        masz = tisztafej
+        helye = db
+print(f"A leghosszabb tisztafej sorozat {masz} tagból áll, kezdete a(z) {helye + 1 - masz}. dobás")
+ffff = 0
+fffi = 0
 
 
-def negy():
-    s = ""
-    for i in range(4):
-        a = random.randint(1, 11)
-        if a % 2 == 1:
-            s += "F"
-        else:
-            s += "I"
-    return s
+def eloallitas():
+    lista = ["I", "F"]
+    sztr = ""
+    for i in range(0, 4):
+        sztr += random.choice(lista)
+
+    return sztr
 
 
 lista = []
-for i in range(1000):
-    a = negy()
-    lista.append(negy())
-db = 0
-db2 = 0
+for i in range(0, 1000):
+    lista.append(eloallitas())
+f = open(f"dobasok.txt", "w")
 for i in lista:
     if i == "FFFF":
-        db += 1
-    if i == "FFFI":
-        db2 += 1
-f = open("dobasok.txt", "w")
-f.write(f"FFFF: {db}, FFFI: {db2} \n")
+        ffff += 1
+    elif i == "FFFI":
+        fffi += 1
+f.write(f"FFFF: {ffff}, FFFI: {fffi}\n")
 for i in lista:
-    f.write(f"{i} ")
+    f.write(i + " ")
