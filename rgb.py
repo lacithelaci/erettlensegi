@@ -47,7 +47,6 @@ for i in lista:
         sor += 1
 sor = int(input("Sor:"))
 oszlop= int(input("Oszlop:"))
-oszlop = 320
 for i in lista:
     if i.oszlop == oszlop and i.sor == sor:
         print(f"2. feladat\nA képpont színe RGB{i.szin()} ")
