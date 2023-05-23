@@ -67,7 +67,7 @@ for i in lista:
 def hatar(sor, ertek):
     elteres = False
     for i in range(0, 639):
-        if sor[i + 1] - sor[i] > ertek:
+        if abs(sor[i + 1] - sor[i]) > ertek:
             elteres = True
     return elteres
 
