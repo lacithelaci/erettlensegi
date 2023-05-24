@@ -1,10 +1,10 @@
 class Szinek:
-    def __init__(self, piros, zold, kek):
+    def __init__(self, piros, zold, kek, sor, oszlop):
         self.piros = int(piros)
         self.zold = int(zold)
         self.kek = int(kek)
-        self.sor = 0
-        self.oszlop = 0
+        self.sor = int(sor)
+        self.oszlop = int(oszlop)
 
     def __repr__(self):
         return f"{self.piros} {self.zold} {self.kek} {self.sor} {self.oszlop}"
@@ -20,68 +20,79 @@ f = open("kep.txt")
 lista = []
 seged = []
 db = 0
-for i in f:
-    i = i.strip().split()
-    seged.append(i)
-seged2 = []
-for i in seged:
-    for y in i:
-        seged2.append(y)
-        db += 1
-        if db == 3:
-            db = 0
-            lista.append(Szinek(*seged2))
-            seged2 = []
 sor = 1
 oszlop = 0
-db = 0
-for i in lista:
-    oszlop += 1
-    db += 1
-    i.oszlop = oszlop
-    if oszlop == 640:
-        oszlop = 0
-    i.sor = sor
-    if db == 640:
-        db = 0
-        sor += 1
-sor = int(input("Sor:"))
-oszlop= int(input("Oszlop:"))
-for i in lista:
-    if i.oszlop == oszlop and i.sor == sor:
-        print(f"2. feladat\nA képpont színe RGB{i.szin()} ")
-print(f"3. feladat")
-db = 0
-for i in lista:
-    if i.ertek() > 600:
+
+for i in f:
+    i = i.strip().split()
+
+    for y in i:
         db += 1
-print(f"A világos képpontok száma: {db}\n4. feladat")
-minimum = [i.ertek() for i in lista]
-print(f"A legsötétebb pont RGB összege: {min(minimum)}\nA legsötétebb pixelek színe: ")
-mint = min(minimum)
+        seged.append(y)
+
+        if db == 3:
+            db = 0
+            oszlop += 1
+            lista.append(Szinek(*seged, sor, oszlop))
+            seged = []
+
+        if oszlop == 640:
+            oszlop = 0
+            sor += 1
+
+print("2. feladat\nKérem egy képpont adatait! ")
+
+sor = int(input("Sor:"))
+oszlop = int(input("Oszlop:"))
+
 for i in lista:
-    if i.ertek() == mint:
-        print(f"{i.szin()}")
+
+    if i.sor == sor and i.oszlop == oszlop:
+        print(f"A képpont színe RGB{i.szin()} ")
+        break
+
+print("3. feladat")
+
+megfelelo = [i.ertek() for i in lista if i.ertek() > 600]
+print(f"A világos képpontok száma: {len(megfelelo)} ")
+
+print("4. feladat")
+
+osszes = [i.ertek() for i in lista if i.ertek()]
+legsotetebb = min(osszes)
+print(f"A legsötétebb pont RGB összege: {legsotetebb}\nA legsötétebb pixelek színe: ")
+
+for i in lista:
+    if i.ertek() == legsotetebb:
+        print(f"RGB{i.szin()}")
 
 
 def hatar(sor, ertek):
     elteres = False
+
     for i in range(0, 639):
-        if abs(sor[i + 1] - sor[i]) > ertek:
+
+        if sor[i + 1] - sor[i] > ertek:
             elteres = True
+
     return elteres
 
 
 print("6. feladat")
-halmaz = set(i for i in range(1, 361))
+
 seged_lista = []
 seged2 = []
-for y in halmaz:
+
+for y in range(1, 361):
     seged_lista = []
+
     for i in lista:
+
         if y == i.sor:
             seged_lista.append(i.kek)
+
     if (hatar(seged_lista, 10)):
         seged2.append(y)
+
 print(f"A felhő legfelső sora: {min(seged2)} ")
 print(f"A felhő legalsó sora: {max(seged2)} ")
