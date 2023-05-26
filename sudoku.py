@@ -1,74 +1,82 @@
-#Szemán László
-def fuggveny(a,b):
-    xd=3*((a - 1)//3)+((b - 1)//3)+1
-    return xd
-print("1. feladat")
-file=input("Adja meg a bemeneti fájl nevét!")
-sor=int(input("Adja meg egy sor számát! "))
-oszlop=int(input("Adja meg egy oszlop számát! "))
-f=open("konnyu.txt")
-lista=[]
-for i in range(9):
-    xd=f.readline().strip().split()
-    adatok=[int(laci) for laci in xd]
-    lista.append(adatok)
-lista2=[]
+fajlnev = input(f"1. feladat\nAdja meg a bemeneti fájl nevét! konnyu.txt ")
+f = open(f"{fajlnev}")
+
+lista = []
+db = 0
+sor = int(input("Adja meg egy sor számát! 1 "))
+oszlop = int(input("Adja meg egy oszlop számát! 1 "))
+
 for i in f:
-    i=[int(laci) for laci in i.strip().split()]
-    lista2.append(i)
+
+    db += 1
+    lista.append((i.split()))
+
+    if db == 9:
+        break
+
+muveletek = []
+for i in f:
+    muveletek.append(i.split())
 print("3. feladat")
-a=None
+
+
+def resztabla(sor, oszlop):
+    return 3 * ((sor - 1) // 3) + ((oszlop - 1) // 3) + 1
+
+
+if lista[sor - 1][oszlop - 1] != "0":
+
+    print(f"Az adott helyen szereplő szám:", lista[sor - 1][oszlop - 1])
+    print(f"A hely a(z) {resztabla(sor, oszlop)} résztáblázathoz tartozik.\n4. feladat")
+
+else:
+
+    print(f"Az adott helyet még nem töltötték ki.")
+    print(f"A hely a(z) {resztabla(sor, oszlop)} résztáblázathoz tartozik.\n4. feladat")
+
+db = 0
+
 for i in lista:
-    a=lista[sor-1][oszlop-1]
-    if a==0:
-        a="Az adott helyet még nem töltötték ki"
-print(f"Az adott helyen szereplő szám: {a} ")
-print(f"A hely a(z) {fuggveny(sor,oszlop)} résztáblázathoz tartozik. ")
-print("4. feladat")
-szumha=0
-for i in lista:
-    for sor in i:
-        if sor==0:
-            szumha+=1
-print(f"Az üres helyek aránya: {(szumha/81*100):.1f} %")
+
+    for y in i:
+
+        if y == "0":
+            db += 1
+
+print(f"Az üres helyek aránya: {db / 81 * 100:.1f}% ")
 print("5. feladat")
-print()
-for i in lista2:
-    szam = i[0]
-    sor=i[1]-1
-    oszlop=i[2]-1
-    print("A kiválasztott sor:", i[1], "oszlop:", i[2], "a szám:", i[0])
 
-    if lista[sor][oszlop]>0:
-        print("A helyet már kitöltötték.")
-        print()
+for sor in muveletek:
+
+    volt_sor = False
+    volt_oszlop = False
+    halmaz = set()
+    print(f"A kiválasztott sor: {sor[1]} oszlop: {sor[2]} a szám: {sor[0]} ")
+    sorocska = int(sor[1])
+    oszlopocska = int(sor[2])
+
+    if lista[sorocska - 1][oszlopocska - 1] != "0":
+        print(f"A helyet már kitöltötték.\n")
+
     else:
-        szerepel=0
-        for xd in range(9):
-            if lista[sor][xd] == szam:
-                szerepel=1
-        if szerepel==1:
-            print("Az adott sorban már szerepel a szám")
-            print()
-        else:
-            szerepel = 0
-            for buvesz in range(9):
-                if lista[buvesz][oszlop]==szam:
-                    szerepel=1
-            if szerepel==1:
-                print("Az adott oszlopban már szerepel a szám.")
-                print()
+        for i in range(0, 9):
+
+            if lista[i][oszlopocska - 1] == sor[0]:
+                print("Az adott oszlopban már szerepel a szám\n")
+                volt_oszlop = True
+
+            elif lista[sorocska - 1][i] == sor[0]:
+                print(f"Az adott sorban már szerepel a szám\n")
+                volt_sor = True
+
             else:
-                szerepel=0
-                for buvesz in range(3*(sor//3), 3*(sor//3)+3):
-                    for xd in range(3*(oszlop//3), 3*(oszlop//3)+3):
-                        if lista[buvesz][xd]==szam:
-                            szerepel=1
-                if szerepel==1:
-                    print("A résztáblázatban már szerepel a szám.")
-                    print()
-                else:
-                    print("A lépés megtehető.")
-                    print()
+                for y in range(0, 9):
 
+                    if resztabla(i + 1, y + 1) == resztabla(sorocska, oszlopocska):
+                        halmaz.add(lista[i][y])
 
+        if sor[0] in halmaz and not volt_sor and not volt_oszlop:
+            print(f"A résztáblázatban már szerepel a szám.\n ")
+
+        elif not volt_sor and not volt_oszlop:
+            print(f"A lépés megtehető\n")
