@@ -1,73 +1,88 @@
 import random
 
-print("2. feladat\nAdja meg, mi nyitja a zárat!")
-a = input("")
-print("3. feladat")
-f = open("ajto.txt")
 lista = []
+f = open("ajto.txt")
+
 for i in f:
     i = i.strip()
     lista.append(i)
-    lista2 = []
-for index, i in enumerate(lista):
-    if i == a:
-        lista2.append(index + 1)
-print("A nyitó kódszámok sorai:", *lista2)
-print("4. feladat")
+
+print(f"2. feladat\nAdja meg, mi nyitja a zárat! 239451")
+
+szam = input()
+seged = []
+db = 0
+
+for i in lista:
+    db += 1
+
+    if i == szam:
+        seged.append(db)
+
+print(f"3. feladat\nA nyitó kódszámok sorai:", *seged)
+print(f"4. feladat")
 
 
-def ismetlodes(a):
-    hasonlo = False
-    db = 0
-    for i in range(len(a)):
-        db = 0
-        for y in a:
-            if a[i] == y:
-                db += 1
-                if db >= 2:
-                    hasonlo = True
-    return hasonlo
+def ismetlodo(szam):
+    return len(set(i for i in szam))
 
 
-ismetel = False
-for index, i in enumerate(lista):
-    if ismetlodes(i):
-        print(f"Az első ismétlődést tartalmazó próbálkozás sorszáma: {index + 1}")
-        ismetel = True
+db = 0
+volt = False
+
+for i in lista:
+    db += 1
+
+    if len(i) != ismetlodo(i):
+        volt = True
+        print(f"Az első ismétlődést tartalmazó próbálkozás sorszáma:", db)
         break
-if not ismetel:
-    print("nem volt ismétlődő számjegy")
-print("5. feladat ")
-lista2 = []
-b = len(a)
-while len(lista2) != b:
-    d = random.randint(0, 9)
-    if d not in lista2:
-        lista2.append(d)
 
-szam = ""
-for i in lista2:
-    szam += str(i)
-print(f"Egy {len(a)} hosszú kódszám: {szam} ")
-print("6. feladat")
+if not volt:
+    print(f"nem volt ismétlődő számjegy")
+
+print("5. feladat")
+
+
+def karakter(hossz):
+    kod = ""
+    karakterek = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+    while len(kod) != hossz:
+        character = random.choice(karakterek)
+
+        if character not in kod:
+            kod += character
+
+    return kod
+
+
+print(f"Egy {len(szam)} hosszú kódszám: {karakter(len(szam))} ")
 
 
 def nyit(jo, proba):
     egyezik = len(jo) == len(proba)
+
     if egyezik:
-        elteres=int(jo[0])-int(proba[0])
-        for i in range(1,len(jo)):
-            if(elteres - (int(jo[i]) - int(proba[i]))) % 10 != 0:
-                egyezik=False
+        elteres = int(jo[0]) - int(proba[0])
+
+        for i in range(1, len(jo)):
+            if (elteres - (int(jo[i]) - int(proba[i]))) % 10 != 0:
+                egyezik = False
+
     return egyezik
 
-for i in lista:
-    i=str(i)
-    if (len(i))!=len(a):
-        print(f"{i} hibás hossz")
-    else:
-        if nyit(i,a):
-            print(f"{i}: sikeres")
-        else:
-            print(f"{i}: hibás kódszám")
 
+f = open("siker.txt", "w", encoding="utf-8")
+for i in lista:
+
+    if len(i) != len(szam):
+        f.write(f"{i} hibás hossz\n")
+
+    else:
+
+        if nyit(i, szam):
+            f.write(f"{i} sikeres\n")
+
+        else:
+            f.write(f"{i} hibás kódszám\n")
