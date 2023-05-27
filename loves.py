@@ -1,101 +1,93 @@
+class Verseny:
+    def __init__(self, rajtszam, loves):
+        self.rajtszam = rajtszam
+        self.loves = loves
+
+    def __repr__(self):
+        return f"{self.rajtszam} {self.loves}"
+
+    def tobbtalalat(self):
+        sor = self.loves.split("-")
+        seged = []
+
+        for i in sor:
+            seged.append(len(i))
+
+        return seged
+
+    def celtero(self):
+        db = 0
+        seged = []
+
+        for i in self.loves:
+
+            db += 1
+            if i == "+":
+                seged.append(db)
+
+        return seged
+
+
 f = open("verseny.txt")
-elso_sor = f.readline()
+fajl_hossz = f.readline()
+db = 0
 lista = []
+
 for i in f:
+
     i = i.strip()
-    lista.append(i)
-print("2. feladat")
+    db += 1
+    lista.append(Verseny(db, i))
 
-halmaz = set()
-for index, i in enumerate(lista):
-    a = ""
-    b = ""
-    for y in i:
-        a = y
-        if b == a and a == "+" and b == "+":
-            halmaz.add(index + 1)
-        b = a
-print(f"Az egymast kovetoen tobbszor talalo versenyzok:", end=" ")
-for i in halmaz:
-    print(i, end=" ")
-print("\n3. feladat")
-lista2 = [int(len(i)) for i in lista]
-masz = max(lista2)
-for index, i in enumerate(lista):
+print(f"2. feladat")
 
-    if len(i) == masz:
-        print(f"A legtobb lovest leado versenyzo rajtszama: {index + 1}")
+tobb_talalatos = [i.rajtszam for i in lista if max(i.tobbtalalat()) > 1]
+print(f"Az egymast kovetoen tobbszor talalo versenyzok:", *tobb_talalatos)
+
+print("3. feladat")
+
+for i in sorted(lista, key=lambda i: len(i.loves), reverse=True):
+    print(f"A legtobb lovest leado versenyzo rajtszama: {i.rajtszam}")
+    break
 
 
 def loertek(sor):
     aktpont = 20
     ertek = 0
-    for i in range(len(sor)):
-        if aktpont > 0 and sor[i] == "-":
-            aktpont = aktpont - 1
+
+    for i in range(0, len(sor)):
+
+        if aktpont > 0 and sor[i] == '-':
+            aktpont += -1
+
         else:
-            ertek = ertek + aktpont
-    loertek = ertek
-    return loertek
+            ertek += aktpont
+
+    return ertek
 
 
-print("5. feladat")
-sorszam = 2
-db = 0
-db2 = 0
-masz = 0
-talalt = []
-c = ""
-for index, i in enumerate(lista):
-    a = ""
-    b = ""
-    if index == sorszam - 1:
-        for index2, y in enumerate(i):
-            if y == "+":
-                db += 1
-                talalt.append(index2 + 1)
-            if b == a and a == "+":
+print(f"5. feladat\nAdjon meg egy rajtszamot! 2 ")
+rajtszam = int(input())
 
-                db2 += 1
-            else:
-                db2 = 0
-            a = y
-            if db2 > masz:
-                masz = db2
+for i in lista:
 
-            b = a
-        c = loertek(i)
-print("5a. feladat: Celt ero lovesek:", *talalt)
-print("5b. feladat: Az eltalalt korongok szama:", db)
-print("5c. feladat: A leghosszabb hibatlan sorozat hossza: ", db2)
-print(f"5d. feladat: A versenyzo pontszama:", c)
+    if rajtszam == i.rajtszam:
 
+        print(f"5a. feladat: Celt ero lovesek:", *i.celtero())
+        print(f"5b. feladat: Az eltalalt korongok szama:", len(i.celtero()))
+        print(f"5c. feladat: A leghosszabb hibatlan sorozat hossza: ", max(i.tobbtalalat()))
+        print(f"5d. feladat: A versenyzo pontszama:", loertek(i.loves))
 
-class Verseny:
-    def __init__(self, sorszam, pontszam):
-        self.sorszam = int(sorszam)
-        self.pontszam = int(pontszam)
+f = open("sorrend.txt", "w", encoding="utf-8")
+elozo = ""
+jelenlegi = None
+helyezes = 0
 
-    def __repr__(self):
-        return f"{self.sorszam} {self.pontszam}"
+for i in sorted(lista, key=lambda i: loertek(i.loves), reverse=True):
+    jelenlegi = loertek(i.loves)
 
-
-vegeredmeny = []
-for index, i in enumerate(lista):
-    vegeredmeny.append(Verseny(index + 1, loertek(i)))
-hely = 0
-jelenlegi = -1
-elozo = -2
-db = 0
-xd = open("sorrend.txt", "w")
-for i in sorted(vegeredmeny, key=lambda i: i.pontszam, reverse=True):
-    db = 0
-    jelenlegi = i.pontszam
     if elozo != jelenlegi:
-        hely += 1
-    else:
-        db += 1
+        helyezes += 1
 
-    xd.write(f"{hely}\t{i.sorszam}\t{i.pontszam}\n")
-    hely = db + hely
+    f.write(f"{helyezes} {i.rajtszam} {jelenlegi}\n")
     elozo = jelenlegi
