@@ -1,117 +1,101 @@
 lista = []
-o = open("ip.txt")
-for i in o:
+f = open("ip.txt")
+
+for i in f:
+    
     i = i.strip()
     lista.append(i)
-print(f"2. feladat:\nAz állományban {len(lista)} darab adatsor van. ")
-print("3. feladat")
-lista2 = sorted(lista, key=lambda i: i)
-utso = ""
-for i in lista2:
-    utso = i
-    break
-print(f"A legalacsonyabb tárolt IP-cím:")
-print(utso)
-print("4. feladat")
+    
+print(f"2. feladat:\nAz állományban {len(lista)} darab adatsor van.")
+
+print(f"3. feladat:\nA legalacsonyabb tárolt IP-cím:", sorted(lista)[0])
+
+print(f"4. feladat")
 
 
-def fuggveny(a):
-    megoldas = "Helyi egyedi cím"
-    if a[0:9] == "2001:0db8":
-        megoldas = "Dokumentációs cím"
-    if a[0:7] == "2001:0e":
-        megoldas = "Globális egyedi cím"
-    return megoldas
+def ip_cim_fajtak(ipcim):
+    
+    if ipcim[0:9] == "2001:0db8":
+        return f"Dokumentációs cím"
+    
+    elif ipcim[0:7] == "2001:0e":
+        return f"Globális egyedi cím"
+    
+    else:
+        return f"Helyi egyedi cím:"
 
 
 szotar = {}
+
 for i in lista:
-    szotar[fuggveny(i)] = szotar.get(fuggveny(i), 0) + 1
-for i, xd in szotar.items():
-    print(f"{i}:{xd}")
+    szotar[ip_cim_fajtak(i)] = szotar.get(ip_cim_fajtak(i), 0) + 1
+    
+for index, i in szotar.items():
+    print(f"{index} : {i}")
+    
+f = open("sok.txt", "w", encoding="utf-8")
+sorszam = 0
+
+for i in lista:
+    sorszam += 1
+    
+    if i.count("0") >= 18:
+        f.write(f"{sorszam} {i}\n")
+        
+print(f"6. feladat\nKérek egy sorszámot: 10 ")
+sorszam = int(input())
+
+def rovidetes_1(sor):
+    teljes = ""
+    uj_alak = sor.replace("0000", "0")
+    uj_alak = uj_alak.split(":")
+    
+    for i in uj_alak:
+        
+        if len(i) != 1:
+            
+            while i[0] == '0':
+                i = i.replace('0', "", 1)
+                
+        teljes += i
+        teljes += ":"
+        
+    return teljes[0:-1]
 
 
-def nullak(a):
-    db = 0
-    for i in a:
-        if i == "0":
-            db += 1
-    return db
+print(f"{lista[sorszam - 1]}\n{rovidetes_1(lista[sorszam - 1])}\n7. feladat")
 
 
-f = open("sok.txt", "w")
-for index, i in enumerate(lista):
-    if nullak(i) >= 18:
-        f.write(f"{index + 1} {i} \n")
-print("6. feladat")
-
-
-def nullak_nelkul(a):
-    a = a.strip().split(":")
-    ures = ""
-    for i in a:
-        if i == "0000":
-            ures += "0"
-            ures += ":"
+def rovidetes_2(sor):
+    uj_alak = sor.split(":")
+    maximum = 0
+    szamlalo = 0
+    ujabb_alak=""
+    
+    for i in uj_alak:
+        
+        if i[0] == '0':
+            szamlalo+=1
+            
         else:
-            ures += i
-            ures += ":"
-    return ures
+            szamlalo=0
 
-
-def eltuntetheto(a):
-    a = a.strip().split(":")
-    ures = ""
-    semmi = ""
-    for i in a:
-        if len(i) > 1:
-            if i[0].__contains__("0") or i[0:1].__contains__("00") or i[0:2].__contains__("000"):
-                semmi = i.replace("0", "")
-            else:
-                semmi = i
-        else:
-            semmi = i
-        ures += semmi
-        ures += ":"
-
-    return ures[0:-1]
-b=int(input("Kérek egy sorszámot: 10"))
-for index, i in enumerate(lista):
-    if index==b-1:
-        a=i
-a = eltuntetheto(nullak_nelkul(a))
-print(a)
-print('7. feladat')
-
-
-def fuggveny2(a):
-    masz = 0
-    jelenlegi = 0
-    el = ""
-    jel = ""
-    b = a.strip().split(":")
-    for i in b:
-        jel = i
-        if jel == "0" and jel == el:
-            jelenlegi += 1
-        else:
-            jelenlegi = 0
-        if jelenlegi > masz:
-            masz = jelenlegi
-        el = jel
-
-    semmi = ""
-    if masz>=1:
-        for i in range(0, masz + 1):
-            semmi += ":"
-            semmi += "0"
-        a = a.replace(semmi, ":", 1)
-
-        return a[0:-1]
+        if maximum<szamlalo:
+            maximum=szamlalo
+            
+        ujabb_alak+=i
+        ujabb_alak+=":"
+        
+    ujabb_alak=ujabb_alak[0:-1]
+    
+    if maximum>1:
+        return ujabb_alak.replace(":0"*maximum,":",1)
+    
     else:
-        return a
-
-if fuggveny2(a) == a:
-    print("Nem rövidíthető tovább.")
+        return ujabb_alak
+    
+if rovidetes_1(lista[sorszam - 1])!=rovidetes_2(rovidetes_1(lista[sorszam - 1])):
+    print(rovidetes_2(rovidetes_1(lista[sorszam - 1])))
+    
 else:
-    print(fuggveny2(a))
+    print("Nem rövidíthető tovább.")
