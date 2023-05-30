@@ -1,137 +1,86 @@
-class Park:
-    def __init__(self, elso, utolso, szin, sorszam):
-        self.sorszam = sorszam
-        self.elso = int(elso)
-        self.utolso = int(utolso)
+class Agyasok:
+    def __init__(self, kezdet, veg, szin, sorszam):
+        self.kezdet = int(kezdet)
+        self.veg = int(veg)
         self.szin = szin
+        self.sorszam = sorszam
 
     def __repr__(self):
-        return f"{self.elso} {self.utolso} {self.szin} {self.sorszam}"
+        return f"{self.kezdet} {self.veg} {self.szin}"
 
 
 f = open("felajanlas.txt")
-ssz = 0
-elso_sor = int(f.readline())
 lista = []
-for i in f:
-    i = i.strip().split()
-    ssz += 1
-    lista.append(Park(*i, ssz))
-print(f"2. feladat\nA felajánlások száma: {len(lista)} ")
-kethelyen = []
-for i in lista:
-    if i.elso > i.utolso:
-        kethelyen.append(i.sorszam)
-print("3. feladat\nA bejárat mindkét oldalán ültetők:", *kethelyen)
-print("4. feladat")
-ssz = int(input("Adja meg az ágyás sorszámát!"))
+agyas_szam = int(f.readline().strip())
 db = 0
-listas = []
-listas.append(ssz)
-volt = 0
-elso_szin = None
-szines_halmaz = set()
-volt2 = False
-for i in lista:
-    volt2 = False
-    if i.elso < i.utolso:
-        for y in range(i.elso, i.utolso + 1):
-            if y in listas:
-                volt2=True
 
-                volt += 1
-                if volt == 1:
-                    elso_szin = i.szin
-                szines_halmaz.add(i.szin)
-    else:
-        for y in range(i.elso, elso_sor + 1):
-            if y in listas:
-                volt2 = True
+for i in f:
+    db += 1
+    lista.append(Agyasok(*i.strip().split(), db))
 
-                volt += 1
-                if volt == 1:
-                    elso_szin = i.szin
-                szines_halmaz.add(i.szin)
-            else:
-                for y2 in range(1, i.utolso + 1):
+print(f"2. feladat\nA felajánlások száma: {len(lista)}\n3. feladat")
+mindket_oldalt = [i.sorszam for i in lista if i.kezdet > i.veg]
 
-                    if y2 in listas:
-                        volt2 = True
-                        volt += 1
-                        if volt == 1:
-                            elso_szin = i.szin
-                        szines_halmaz.add(i.szin)
-    if volt2:
-        db += 1
-print(f"A felajánlók száma: {db}")
-if elso_szin == None:
-    print("Ezt az ágyást nem ültetik be.")
+print(f"A bejárat mindkét oldalán ültetők:", *mindket_oldalt)
+print(f"4. feladat\nAdja meg az ágyás sorszámát! 100 ")
+
+agyas = int(input())
+beultetett = [i.szin for i in lista if
+              (i.kezdet <= agyas <= i.veg) or (i.kezdet >= agyas <= i.veg and i.veg < i.kezdet)]
+
+minden_egyszer = set(i for i in beultetett)
+
+if len(beultetett) != 0:
+    print(
+        f"A felajánlók száma: {len(beultetett)}\nA virágágyás színe, ha csak az első ültet: {beultetett[0]}\nA virágágyás színei:",
+        *list(minden_egyszer))
+
 else:
-    print(f"A virágágyás színe, ha csak az első ültet: {elso_szin}")
-if len(szines_halmaz) != 0:
-    print(f"A virágágyás színei:", *szines_halmaz)
-print("5. feladat")
+    print(f"A felajánlók száma: 0\nEzt az ágyást nem ültetik be.")
+print(f"5. feladat ")
 
-
-def kivonas(a, b, c):
-    if a < b:
-        return b - a + 1
-    else:
-        return (c - a) + b + 1
-
-
-agyasos_halmaz = set()
-for i in lista:
-    if i.elso < i.utolso:
-        for y in range(i.elso, i.utolso + 1):
-            agyasos_halmaz.add(y)
-    else:
-        for y2 in range(1, i.utolso + 1):
-            agyasos_halmaz.add(y2)
-        for y in range(i.elso, elso_sor + 1):
-            agyasos_halmaz.add(y)
-szum = 0
-for i in lista:
-    szum += kivonas(i.elso, i.utolso, elso_sor)
-if len(agyasos_halmaz) == elso_sor:
-    print("Minden ágyás beültetésére van jelentkező.")
-elif szum > elso_sor:
-    print("Átszervezéssel megoldható a beültetés.")
-else:
-    print("A beültetés nem oldható meg.")
 agyasok = set()
+db = 0
+for i in lista:
+
+    if i.kezdet < i.veg:
+
+        for ultetveny in range(i.kezdet, i.veg + 1):
+            db += 1
+            agyasok.add(ultetveny)
+
+    else:
+
+        for ultetveny in range(i.kezdet, agyas_szam + 1):
+            agyasok.add(ultetveny)
+            db += 1
+
+        for ultetveny in range(1, i.veg + 1):
+            agyasok.add(ultetveny)
+            db += 1
+
+if len(agyasok) == agyas_szam:
+    print(f"Minden ágyás beültetésére van jelentkező.")
+
+elif agyas_szam <= db:
+    print(f"Átszervezéssel megoldható a beültetés.")
+
+else:
+    print(f"A beültetés nem oldható meg.")
+
 f = open("szinek.txt", "w")
-ures = "# 0"
-szamlalo = 0
-volte = False
-for y in range(1, elso_sor + 1):
+agyasok = set(i for i in range(1, agyas_szam + 1))
+
+for ultetveny in sorted(agyasok):
+    szine = "# 0"
+
     for i in lista:
-        szamlalo += 1
-        if i.elso < i.utolso:
-            for xd in range(i.elso, i.utolso + 1):
-                if xd == y:
-                    if not volte:
-                        ures = f"{i.szin} {i.sorszam}"
-                        szamlalo = 0
-                        volte = True
-        else:
-            for xd in range(i.elso, elso_sor + 1):
-                if xd == y:
-                    if not volte:
-                        ures = f"{i.szin} {i.sorszam}"
-                        szamlalo = 0
-                        volte = True
+        if i.kezdet <= ultetveny <= i.veg:
+            szine = f"{i.szin} {i.sorszam}"
+            break
 
-                else:
-                    for y2 in range(1, i.utolso + 1):
-
-                        if y2 == y:
-                            if not volte:
-                                ures = f"{i.szin} {i.sorszam}"
-                                szamlalo = 0
-                                volte = True
-        if szamlalo == elso_sor:
-            ures = "# 0"
-    f.write(f"{ures}\n")
-    volte = False
-
+        elif i.kezdet >= ultetveny <= i.veg and i.veg < i.kezdet:
+            szine = f"{i.szin} {i.sorszam}"
+            break
+            
+    f.write(f"{szine}\n")
