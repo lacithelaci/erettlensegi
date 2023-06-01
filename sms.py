@@ -1,81 +1,82 @@
-def szo(a):
-    betu = ""
-    for i in a:
-        if i in "abc":
-            betu += "2"
-        if i in "def":
-            betu += "3"
-        if i in "ghi":
-            betu += "4"
-        if i in "jkl":
-            betu += "5"
-        if i in "mno":
-            betu += "6"
-        if i in "pqrs":
-            betu += "7"
-        if i in "tuv":
-            betu += "8"
-        if i in "wxyz":
-            betu += "9"
-    return betu
+def szamokkal(szoveg):
+    hozzafuzni = ""
+    betuk = ["abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"]
+    
+    for betu in szoveg:
+        db = 1
+        
+        for i in betuk:
+            db += 1
+            
+            if betu in i:
+                
+                hozzafuzni += str(db)
+    return hozzafuzni
 
 
-kodok = []
-a = input()
-print("1. feladat:", szo("a"))
-ablak = input()
-print("2. feladat", szo(ablak))
-f = open("szavak.txt")
+print(f"1. feladat\nAdjon meg egy betűt: ")
+betu = input()
+
+print(f"Ez tartozik hozzá: {szamokkal(betu)}\n2. feladat\nkérek egy szót")
+
+szo = input()
+print(f"Ezzel a számsorral lehet ezt a telefonba bevinni:", szamokkal(szo))
+
 lista = []
+f = open("szavak.txt")
+
 for i in f:
     i = i.strip()
     lista.append(i)
-print("4. feladat")
-for i in sorted(lista, key=lambda i: len(i), reverse=True):
-    print(f"{i} {len(i)}")
-    break
-print("5. feladat")
-db = 0
+
+print(f"4. feladat\nA leghosszabb szó:", sorted(lista, key=lambda i: len(i))[-1])
+
+print(f"5. feladat")
+rovidek = [i for i in lista if len(i) <= 5]
+
+print(f"{len(rovidek)} rövid szó található a fájlban!")
+f = open("kodok.txt", "w", encoding="utf-8")
+
 for i in lista:
-    if len(i) <= 5:
-        db += 1
-print(f"rövidszavak: {db}")
-f = open("kodok.txt", "w")
-for i in lista:
-    f.write(f"{szo(i)}\n")
-print("7. feladat")
-a = input()
-for i in lista:
-    if szo(i) == a:
-        print(i)
-    kodok.append(szo(i))
-print("8. feladat")
+    f.write(f"{szamokkal(i)}\n")
+    
+print(f"7. feladat\nAdjon meg egy számsort")
+szamsor = input()
+szamsoros = [i for i in lista if szamokkal(i) == szamsor]
+
+print(f"Ezek tartoznak hozzá:", *szamsoros)
+print(f"8. feladat")
+
 szotar = {}
-for i in kodok:
-    szotar[i] = szotar.get(i, 0) + 1
-tobb = []
-for index, i in szotar.items():
-    if i >= 2:
-        tobb.append(index)
-db = 0
-for i in sorted(lista):
-    for y in tobb:
-        if szo(i) == y:
-            db += 1
-            print(f"{y}:{i};", end=" ")
-            if db % 8 == 0:
-                print()
-print("9. feladat")
-a = 0
-for i in szotar.values():
-    if a <= i:
-        a = i
-indesze=""
-for index ,i in szotar.items():
-    if i==a:
-        indesze=index
-print("9. feladat")
-print(f"{indesze}:",end=" ")
+
 for i in lista:
-    if indesze==szo(i):
-        print(f"{i},",end=" ")
+    szotar[szamokkal(i)] = szotar.get(szamokkal(i), 0) + 1
+    
+db2 = 0
+
+for index, db in szotar.items():
+    for y in lista:
+        
+        if db > 1 and szamokkal(y) == index:
+            db2 += 1
+            print(f"{y} : {index}", end="; ")
+            
+        if db2 == 8:
+            print("")
+            db2 = 0
+            
+print("\n9. feladat")
+van = False
+kod = None
+maximum = max(szotar.values())
+
+for index, i in szotar.items():
+    
+    for y in lista:
+        
+        if index == szamokkal(y) and maximum == i:
+            kod = szamokkal(y)
+            break
+            
+idetartozo = [i for i in lista if szamokkal(i) == kod]
+print(f"{kod}:", *idetartozo)
