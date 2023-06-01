@@ -1,81 +1,93 @@
-class Verseny:
-    def __init__(self,az,valasz):
+class Tesztverseny:
+    def __init__(self, az, valasz):
         self.az = az
         self.valasz = valasz
-        self.pontszam = 0
+
     def __repr__(self):
-        f"{self.az} {self.valasz} "
-def plussz(megoldas,valasz):
-    a=len(megoldas)
-    veg=""
-    jelenleg=""
-    for i in range(0,a-1):
-        if megoldas[i]==valasz[i]:
-            jelenleg="+"
-        else:
-            jelenleg=" "
-        veg=veg+jelenleg
-    return veg
-def fuggveny(megoldas,valasz):
-    pont=0
-    for i in range(0,15):
-        if i<=5:
-            if megoldas[i-1]==valasz[i-1]:
-                pont+=3
-        if i>5 and i <=10:
-            if megoldas[i-1]==valasz[i-1]:
-                pont+=4
-        if i > 10 and i <= 13:
-            if megoldas[i-1] == valasz[i-1]:
-                pont += 5
-        if i==14:
-            if megoldas[i-1] == valasz[i-1]:
-                pont += 6
+        return f"{self.az} {self.valasz}"
 
-    return pont
 
-f=open("valaszok.txt")
-lista=[]
-valaszok=f.readline()
+print(f"1. feladat: Az adatok beolvasása")
+f = open("valaszok.txt")
+elso_sor = f.readline().strip()
+lista = []
+
 for i in f:
-    i=i.strip().split()
-    lista.append(Verseny(*i))
-print(f"1. feladat: Az adatok beolvasása\n2. feladat: A vetélkedőn {len(lista)} versenyző indult.\n3. feladat: A versenyző azonosítója =")
-az=input("")
-v1=""
-for i in lista:
-    if az==i.az:
-        print(f"{i.valasz}")
-        v1=i.valasz
-print("4. feladat")
+    lista.append(Tesztverseny(*i.strip().split()))
+    
+print(f"2. feladat: A vetélkedőn {len(lista)} versenyző indult. ")
 
-print(valaszok)
-print(plussz(valaszok,v1))
-print("5. feladat \nA feladat sorszáma =")
-sorszam=10
-lista2=[i.valasz for i in lista if i.valasz[sorszam-1]==valaszok[sorszam-1]]
-print(f"A feladatra {len(lista2)} fő, a versenyzők {(len(lista2)/len(lista)*100):.2f}%-a adott helyes választ. ")
-print("6. feladat")
-print("A versenyzők pontszámának meghatározása ")
-ki=open("pontok.txt","w",encoding="UTF-8")
-for i in lista:
-    ki.write(f"{i.az} {fuggveny(valaszok,i.valasz)}\n")
-    i.pontszam=fuggveny(valaszok,i.valasz)
-lista=sorted(lista,key=lambda i:i.pontszam,reverse=True)
-szotar= set()
-for i in lista:
-    szotar.add(i.pontszam)
-    if len(szotar)==3:
+print(f"3. feladat: A versenyző azonosítója = AB123 ")
+
+az = input()
+megegyezo_azonosito = [i.valasz for i in lista if i.az == az]
+
+print(f"{megegyezo_azonosito[0]} (a versenyző válasza)\n4. feladat: ")
+
+
+def megegyezo(helyes, bekert):
+    seged_string = ""
+    
+    for i in range(0, len(helyes)):
+        
+        if helyes[i] == bekert[i]:
+            seged_string += "+"
+            
+        else:
+            seged_string += " "
+            
+    return seged_string
+
+
+print(
+    f"{elso_sor} (a helyes megoldás)\n{megegyezo(elso_sor, megegyezo_azonosito[0])} (a versenyző helyes válaszai)\n5. feladat: A feladat sorszáma = 10 ")
+
+sorszam = int(input())
+helyes = [i for i in lista if elso_sor[sorszam - 1] == i.valasz[sorszam - 1]]
+
+print(
+    f"A feladatra {len(helyes)} fő, a versenyzők {len(helyes) / len(lista) * 100:.2f}%-a adott helyes választ.\n6. feladat: A versenyzők pontszámának meghatározása ")
+
+
+def pontok(helyes, bekert):
+    osszeg = 0
+    
+    for i in range(0, len(helyes)):
+        
+        if helyes[i] == bekert[i]:
+            if i <= 4:
+                osszeg += 3
+                
+            elif i <= 9:
+                osszeg += 4
+                
+            elif i <= 12:
+                osszeg += 5
+                
+            else:
+                osszeg += 6
+                
+    return osszeg
+
+
+elso_harom = set()
+
+for i in sorted(lista, key=lambda i: pontok(elso_sor, i.valasz), reverse=True):
+    elso_harom.add(pontok(elso_sor, i.valasz))
+    
+    if len(elso_harom) == 3:
         break
-szotar=sorted(szotar)
-elso=szotar[2]
-masodik=szotar[1]
-harmadik=szotar[0]
-print("7. feladat: A verseny legjobbjai: ")
-for i in lista:
-    if i.pontszam==elso:
-        print(f"1. díj ({elso} pont): {i.az} ")
-    if i.pontszam==masodik:
-        print(f"2. díj ({elso} pont): {i.az} ")
-    if i.pontszam==harmadik:
-        print(f"3. díj ({elso} pont): {i.az} ")
+        
+print(f"7. feladat: A verseny legjobbjai: ")
+
+for i in sorted(lista, key=lambda i: pontok(elso_sor, i.valasz), reverse=True):
+    if pontok(elso_sor, i.valasz) == sorted(list(elso_harom))[2]:
+        print(f"1. díj ({pontok(elso_sor, i.valasz)} pont): {i.az} ")
+        
+    elif pontok(elso_sor, i.valasz) == sorted(list(elso_harom))[1]:
+        print(f"2. díj ({pontok(elso_sor, i.valasz)} pont): {i.az} ")
+        
+    elif pontok(elso_sor, i.valasz) == sorted(list(elso_harom))[0]:
+        print(f"3. díj ({pontok(elso_sor, i.valasz)} pont): {i.az} ")
+
+
