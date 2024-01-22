@@ -35,7 +35,7 @@ korok_szama = 0
 for i in dobasok:
     hanyadik_mezon_vagyunk[db] = hanyadik_mezon_vagyunk[db] + i
     db += 1
-    if db == 5:
+    if db == len(hanyadik_mezon_vagyunk):
         db = 0
         korok_szama += 1
     if max(hanyadik_mezon_vagyunk) >= palyahossz:
